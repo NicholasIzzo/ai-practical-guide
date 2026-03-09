@@ -1,85 +1,531 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Practical Guide</title>
+  <title>Nicholas Izzo — AI & Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      margin: 0;
-      padding: 40px 20px;
+    :root {
+      --bg: #050709;
+      --surface: #0c1018;
+      --surface2: #111820;
+      --border: #1c2535;
+      --accent: #00e5ff;
+      --accent2: #7b61ff;
+      --accent3: #00ff88;
+      --text: #e2eaf2;
+      --muted: #4a5a6e;
+      --muted2: #8a9ab0;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; cursor: none; }
+
+    /* Custom cursor */
+    .cursor { position: fixed; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s, opacity .2s; mix-blend-mode: difference; }
+    .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid rgba(0,229,255,0.4); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: transform .1s, width .3s, height .3s; }
+
+    /* Noise overlay */
+    body::after {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 100;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.4;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
+    /* Grid */
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: linear-gradient(rgba(0,229,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
     }
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
+    /* Orbs */
+    .orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; }
+    .orb-1 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%); top: -200px; right: -200px; }
+    .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(123,97,255,0.07) 0%, transparent 70%); bottom: 0; left: -150px; }
 
-    p {
-      color: #cbd5e1;
-      margin-bottom: 30px;
+    /* Nav */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      padding: 20px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s;
     }
+    nav.scrolled { background: rgba(5,7,9,0.85); backdrop-filter: blur(20px); border-color: var(--border); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.1em; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent); }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 48px 80px;
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
     }
-
-    .card {
-      background: #1e293b;
-      border-radius: 16px;
-      padding: 24px;
-      text-decoration: none;
-      color: white;
-      transition: transform 0.2s ease, background 0.2s ease;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      display: block;
+    .hero-content { max-width: 700px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 32px;
+      padding: 6px 14px; border: 1px solid rgba(0,229,255,0.2); border-radius: 100px;
+      background: rgba(0,229,255,0.05);
+      animation: fadeUp 0.8s ease both;
     }
-
-    .card:hover {
-      transform: translateY(-4px);
-      background: #334155;
+    .hero-tag::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 2s infinite; }
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 10vw, 130px);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s 0.1s ease both;
     }
-
-    .card h2 {
-      margin-top: 0;
-      margin-bottom: 10px;
-      font-size: 1.3rem;
+    .hero h1 .line-dim { color: var(--muted); }
+    .hero h1 .line-accent {
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 60%, var(--accent) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmer 4s linear infinite, fadeUp 0.8s 0.15s ease both;
     }
+    .hero-desc {
+      font-size: 16px; line-height: 1.8; color: var(--muted2);
+      max-width: 500px; margin-bottom: 40px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .hero-desc strong { color: var(--text); font-weight: 500; }
+    .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; animation: fadeUp 0.8s 0.3s ease both; }
+    .btn-primary {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none; border-radius: 8px;
+      font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #000; text-decoration: none; font-weight: 500;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,0.3); }
+    .btn-ghost {
+      padding: 14px 28px;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted2); text-decoration: none;
+      transition: all 0.3s;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-    .card span {
-      color: #93c5fd;
-      font-weight: bold;
+    /* Stats bar */
+    .stats-bar {
+      position: absolute; bottom: 60px; left: 48px; right: 48px;
+      display: flex; gap: 48px;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+    .stat { border-left: 2px solid var(--border); padding-left: 20px; }
+    .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+
+    /* Scroll indicator */
+    .scroll-hint { position: absolute; right: 48px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; animation: fadeUp 1s 0.8s ease both; }
+    .scroll-line { width: 1px; height: 80px; background: linear-gradient(to bottom, transparent, var(--accent), transparent); animation: scrollPulse 2s ease infinite; }
+    .scroll-text { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); writing-mode: vertical-rl; }
+
+    /* Sections */
+    .section { padding: 100px 48px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    .section-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+    .section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--accent); opacity: 0.4; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 64px); letter-spacing: 0.03em; margin-bottom: 48px; line-height: 1; }
+    .section-title span { color: var(--accent); }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid var(--border); max-width: 1200px; margin: 0 auto; }
+
+    /* Projects grid */
+    .projects-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .proj-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px;
+      text-decoration: none; color: var(--text);
+      transition: all 0.3s; position: relative; overflow: hidden;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .proj-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(0,229,255,0.05) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .proj-card:hover::before { opacity: 1; }
+    .proj-card:hover { border-color: rgba(0,229,255,0.3); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .proj-card.large { grid-column: span 8; }
+    .proj-card.small { grid-column: span 4; }
+    .proj-card.half { grid-column: span 6; }
+    .proj-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+    .proj-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.05em; line-height: 1; }
+    .proj-desc { font-size: 13px; color: var(--muted2); line-height: 1.7; flex: 1; }
+    .proj-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+    .proj-tag { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted2); }
+    .proj-tag.accent { border-color: rgba(0,229,255,0.3); color: var(--accent); background: rgba(0,229,255,0.05); }
+    .proj-arrow { margin-left: auto; color: var(--muted); font-size: 18px; transition: transform 0.2s, color 0.2s; align-self: flex-end; }
+    .proj-card:hover .proj-arrow { transform: translate(4px,-4px); color: var(--accent); }
+    .proj-card .proj-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .proj-live { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent3); border: 1px solid rgba(0,255,136,0.2); border-radius: 4px; padding: 2px 7px; }
+
+    /* Tools */
+    .ai-tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .tool-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+      transition: all 0.2s;
+    }
+    .tool-card:hover { border-color: rgba(123,97,255,0.4); background: var(--surface2); }
+    .tool-name { font-weight: 500; font-size: 14px; margin-bottom: 4px; }
+    .tool-desc { font-size: 12px; color: var(--muted2); line-height: 1.6; }
+    .tool-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 4px; margin-bottom: 10px; }
+    .tool-badge.free { background: rgba(0,255,136,0.1); color: var(--accent3); border: 1px solid rgba(0,255,136,0.2); }
+    .tool-badge.paid { background: rgba(255,77,109,0.1); color: #ff4d6d; border: 1px solid rgba(255,77,109,0.2); }
+    .tool-badge.freemium { background: rgba(0,229,255,0.1); color: var(--accent); border: 1px solid rgba(0,229,255,0.2); }
+
+    /* About */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .about-text { font-size: 15px; line-height: 2; color: var(--muted2); }
+    .about-text p { margin-bottom: 20px; }
+    .about-text strong { color: var(--text); font-weight: 500; }
+    .skills-list { display: flex; flex-direction: column; gap: 16px; }
+    .skill-row { display: flex; flex-direction: column; gap: 8px; }
+    .skill-header { display: flex; justify-content: space-between; font-size: 12px; }
+    .skill-name { color: var(--text); }
+    .skill-pct { font-family: 'DM Mono', monospace; color: var(--accent); }
+    .skill-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .skill-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transform: scaleX(0); transform-origin: left; transition: transform 1s ease; }
+    .skill-fill.visible { transform: scaleX(1); }
+
+    /* CTA strip */
+    .cta-strip {
+      margin: 80px 48px;
+      background: linear-gradient(135deg, rgba(0,229,255,0.06), rgba(123,97,255,0.06));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 56px 64px;
+      display: flex; align-items: center; justify-content: space-between; gap: 32px;
+      position: relative; z-index: 1; overflow: hidden;
+      max-width: 1200px; margin-left: auto; margin-right: auto;
+    }
+    .cta-strip::before { content: ''; position: absolute; right: -100px; top: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(123,97,255,0.08), transparent 70%); }
+    .cta-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 48px); letter-spacing: 0.03em; }
+    .cta-sub { font-size: 14px; color: var(--muted2); margin-top: 8px; }
+    .cta-buttons { display: flex; gap: 12px; flex-shrink: 0; flex-wrap: wrap; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 32px 48px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.1em; color: var(--muted); }
+    .footer-logo span { color: var(--accent); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: 0.06em; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* Animations */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    @keyframes shimmer { to { background-position: 200% center; } }
+    @keyframes scrollPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    /* Reveal on scroll */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .hero { padding: 100px 24px 100px; }
+      .stats-bar { display: none; }
+      .scroll-hint { display: none; }
+      .section { padding: 60px 24px; }
+      .proj-card.large, .proj-card.small, .proj-card.half { grid-column: span 12; }
+      .about-grid { grid-template-columns: 1fr; }
+      .cta-strip { flex-direction: column; padding: 36px 28px; margin: 40px 24px; }
+      footer { flex-direction: column; gap: 16px; text-align: center; padding: 28px 24px; }
+      .nav-links { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>AI Practical Guide</h1>
-    <p>Raccolta di strumenti e pagine pratiche dedicate al mondo AI.</p>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="ring"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 
-    <div class="grid">
-      <a class="card" href="./benchmark-modelli-ai.html">
-        <h2>Benchmark Modelli AI</h2>
-        <p>Confronto e benchmark interattivi dei modelli AI 2025-2026.</p>
-        <span>Apri pagina →</span>
+  <nav id="nav">
+    <a href="#" class="nav-logo">N<span>.</span>IZZO</a>
+    <div class="nav-links">
+      <a href="#progetti">Progetti</a>
+      <a href="#tools">AI Tools</a>
+      <a href="#about">About</a>
+      <a href="https://github.com/NicholasIzzo" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/nicholasiszzo" target="_blank">LinkedIn</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="position:relative;z-index:1">
+    <div class="hero" style="max-width:1200px;margin:0 auto">
+      <div class="hero-content">
+        <div class="hero-tag">Sistemista &amp; AI Enthusiast &mdash; Milano</div>
+        <h1>
+          <span class="line-dim">NICHOLAS</span><br>
+          <span class="line-accent">IZZO</span><br>
+          <span class="line-dim" style="font-size:0.45em;letter-spacing:0.08em">SYSTEMS &amp; CLOUD &amp; AI</span>
+        </h1>
+        <p class="hero-desc">
+          Sistemista con passione per <strong>AI applicata</strong>, cloud computing e self-hosting.<br>
+          Studente L31 Informatica @ Pegaso &mdash; specializzazione AI.<br>
+          Certificato <strong>AZ-900</strong>. In percorso verso Cloud Architect e AI Engineer.
+        </p>
+        <div class="hero-ctas">
+          <a href="#progetti" class="btn-primary">Esplora i progetti</a>
+          <a href="https://github.com/NicholasIzzo" target="_blank" class="btn-ghost">GitHub &rarr;</a>
+        </div>
+      </div>
+      <div class="scroll-hint">
+        <div class="scroll-line"></div>
+        <span class="scroll-text">Scroll</span>
+      </div>
+    </div>
+    <div class="stats-bar" style="max-width:1200px;margin:0 auto;position:relative;bottom:auto;left:auto;right:auto;padding:0 48px 80px">
+      <div class="stat"><div class="stat-num">5+</div><div class="stat-label">Repository pubblici</div></div>
+      <div class="stat"><div class="stat-num">AZ-900</div><div class="stat-label">Certificazione Microsoft</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Local-first &amp; open source</div></div>
+      <div class="stat"><div class="stat-num">IT</div><div class="stat-label">Guide in italiano</div></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- PROGETTI -->
+  <section class="section" id="progetti">
+    <div class="section-label">01 &mdash; Progetti</div>
+    <h2 class="section-title">Repository <span>GitHub</span></h2>
+
+    <div class="projects-grid reveal">
+
+      <!-- AI Practical Guide — LARGE -->
+      <a href="https://github.com/NicholasIzzo/ai-practical-guide" target="_blank" class="proj-card large"
+         onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+        <div class="proj-header">
+          <span class="proj-num">001</span>
+          <span class="proj-live">Live</span>
+        </div>
+        <div class="proj-title">AI Practical Guide</div>
+        <p class="proj-desc">Guida pratica all'AI in italiano — prompt engineering, LLM, strumenti per sistemisti, sicurezza, agenti AI e carriera. 13+ guide, benchmark interattivi e career path generator.</p>
+        <div class="proj-tags">
+          <span class="proj-tag accent">AI</span>
+          <span class="proj-tag accent">LLM</span>
+          <span class="proj-tag">Prompt Engineering</span>
+          <span class="proj-tag">Italiano</span>
+          <span class="proj-tag">Open Source</span>
+        </div>
+        <span class="proj-arrow">&#8599;</span>
       </a>
 
-      <a class="card" href="./career-path-generator.html">
-        <h2>Career Path Generator</h2>
-        <p>Strumento per generare un percorso professionale nel mondo AI e tech.</p>
-        <span>Apri pagina →</span>
+      <!-- Homelab -->
+      <a href="https://github.com/NicholasIzzo/homelab" target="_blank" class="proj-card small"
+         onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+        <div class="proj-header">
+          <span class="proj-num">002</span>
+        </div>
+        <div class="proj-title">Homelab</div>
+        <p class="proj-desc">Documentazione del mio homelab: NAS Ugreen, Docker, Jellyfin, Vaultwarden, Pihole, VPN Tailscale.</p>
+        <div class="proj-tags">
+          <span class="proj-tag accent">Docker</span>
+          <span class="proj-tag">NAS</span>
+          <span class="proj-tag">Self-hosting</span>
+        </div>
+        <span class="proj-arrow">&#8599;</span>
+      </a>
+
+      <!-- Domotica -->
+      <a href="https://github.com/NicholasIzzo/domotica" target="_blank" class="proj-card half"
+         onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+        <div class="proj-header">
+          <span class="proj-num">003</span>
+        </div>
+        <div class="proj-title">Domotica</div>
+        <p class="proj-desc">Guida completa alla domotica con Home Assistant — protocolli Zigbee/Tuya, automazioni, consigli di acquisto per fascia di prezzo.</p>
+        <div class="proj-tags">
+          <span class="proj-tag accent">Home Assistant</span>
+          <span class="proj-tag">Zigbee</span>
+          <span class="proj-tag">Tuya Local</span>
+        </div>
+        <span class="proj-arrow">&#8599;</span>
+      </a>
+
+      <!-- Guida Cloud -->
+      <a href="https://github.com/NicholasIzzo/guida-cloud-principianti" target="_blank" class="proj-card half"
+         onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+        <div class="proj-header">
+          <span class="proj-num">004</span>
+        </div>
+        <div class="proj-title">Guida Cloud</div>
+        <p class="proj-desc">Guida al cloud computing per principianti — AWS, Azure, GCP a confronto, modelli di servizio, certificazioni e roadmap.</p>
+        <div class="proj-tags">
+          <span class="proj-tag accent">Azure</span>
+          <span class="proj-tag">AWS</span>
+          <span class="proj-tag">Cloud</span>
+          <span class="proj-tag">AZ-900</span>
+        </div>
+        <span class="proj-arrow">&#8599;</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- AI TOOLS LIVE -->
+  <section class="section" id="tools" style="padding-top:0">
+    <div class="section-label">02 &mdash; Live</div>
+    <h2 class="section-title">Strumenti <span>AI</span></h2>
+    <div class="projects-grid reveal">
+      <a href="./benchmark-modelli-ai.html" class="proj-card half"
+         onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+        <div class="proj-header"><span class="proj-num">TOOL 01</span><span class="proj-live">Live</span></div>
+        <div class="proj-title">Benchmark AI</div>
+        <p class="proj-desc">Grafici interattivi sui benchmark dei principali modelli AI — GPQA Diamond, SWE-bench, AIME, HLE. Dati aggiornati 2025-2026.</p>
+        <div class="proj-tags">
+          <span class="proj-tag accent">Interattivo</span>
+          <span class="proj-tag">Chart.js</span>
+          <span class="proj-tag">GPT / Claude / Gemini</span>
+        </div>
+        <span class="proj-arrow">&#8599;</span>
+      </a>
+      <a href="./career-path-generator.html" class="proj-card half"
+         onmousemove="this.style.setProperty('--mx',event.offsetX/this.offsetWidth*100+'%');this.style.setProperty('--my',event.offsetY/this.offsetHeight*100+'%')">
+        <div class="proj-header"><span class="proj-num">TOOL 02</span><span class="proj-live">Live</span></div>
+        <div class="proj-title">Career Path Generator</div>
+        <p class="proj-desc">Incolla il tuo CV, scegli il ruolo target — l'AI analizza le tue competenze e genera un percorso formativo personalizzato con roadmap e certificazioni.</p>
+        <div class="proj-tags">
+          <span class="proj-tag accent">Claude AI</span>
+          <span class="proj-tag">Career</span>
+          <span class="proj-tag">IT Roles</span>
+        </div>
+        <span class="proj-arrow">&#8599;</span>
       </a>
     </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="section-label">03 &mdash; About</div>
+    <h2 class="section-title">Chi <span>sono</span></h2>
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p>Sistemista con base solida su <strong>Linux, Docker e reti</strong>, con una crescente specializzazione in AI applicata e cloud computing.</p>
+        <p>Studio <strong>Informatica L31 con indirizzo AI</strong> all'Università Pegaso. Certificato <strong>AZ-900</strong>, in percorso verso AZ-104, AZ-305 e AI-102.</p>
+        <p>Gestisco un homelab con NAS Ugreen, miniPC Ubuntu con Jellyfin, stack Docker completo (Pihole, Tailscale, Vaultwarden, arr-stack) e sistema domotico con Home Assistant.</p>
+        <p>Creo guide tecniche in italiano perché il contenuto tecnico di qualita' nella nostra lingua e' ancora troppo scarso.</p>
+        <div style="display:flex;gap:12px;margin-top:28px;flex-wrap:wrap">
+          <a href="https://www.linkedin.com/in/nicholasiszzo" target="_blank" class="btn-primary" style="font-size:11px;padding:10px 20px">LinkedIn</a>
+          <a href="https://github.com/NicholasIzzo" target="_blank" class="btn-ghost" style="font-size:11px;padding:10px 20px">GitHub</a>
+        </div>
+      </div>
+      <div class="skills-list">
+        <div class="skill-row">
+          <div class="skill-header"><span class="skill-name">Linux &amp; Sistemi</span><span class="skill-pct">90%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-header"><span class="skill-name">Docker &amp; Self-hosting</span><span class="skill-pct">85%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-header"><span class="skill-name">Azure / Cloud</span><span class="skill-pct">70%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-header"><span class="skill-name">AI &amp; Prompt Engineering</span><span class="skill-pct">75%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-header"><span class="skill-name">Python &amp; Automazione</span><span class="skill-pct">60%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:60%"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-header"><span class="skill-name">Networking &amp; VPN</span><span class="skill-pct">80%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-strip reveal">
+    <div>
+      <div class="cta-title">Esplora le guide &rarr;</div>
+      <p class="cta-sub">Tutto il materiale e' gratuito, open source e in italiano.</p>
+    </div>
+    <div class="cta-buttons">
+      <a href="https://github.com/NicholasIzzo/ai-practical-guide" target="_blank" class="btn-primary">AI Practical Guide</a>
+      <a href="https://github.com/NicholasIzzo" target="_blank" class="btn-ghost">Tutti i repo</a>
+    </div>
   </div>
+
+  <footer>
+    <div class="footer-logo">N<span>.</span>IZZO</div>
+    <div class="footer-links">
+      <a href="https://github.com/NicholasIzzo" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/nicholasiszzo" target="_blank">LinkedIn</a>
+      <a href="https://NicholasIzzo.github.io" target="_blank">Portfolio</a>
+    </div>
+    <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">2026 &mdash; Nicholas Izzo</div>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('ring');
+    let rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+      rx += (e.clientX - rx) * 0.12;
+      ry += (e.clientY - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+    });
+    document.querySelectorAll('a,button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width = '16px'; cursor.style.height = '16px'; ring.style.width = '48px'; ring.style.height = '48px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width = '8px'; cursor.style.height = '8px'; ring.style.width = '32px'; ring.style.height = '32px'; });
+    });
+
+    // Nav scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          // Animate skill bars
+          e.target.querySelectorAll('.skill-fill').forEach(bar => bar.classList.add('visible'));
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Cursor ring smooth follow
+    function animateRing() {
+      rx += (parseFloat(cursor.style.left || 0) - rx) * 0.12;
+      ry += (parseFloat(cursor.style.top  || 0) - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+  </script>
 </body>
 </html>
