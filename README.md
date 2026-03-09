@@ -1,4 +1,4 @@
-﻿# 🤖 AI Practical Guide
+# 🤖 AI Practical Guide
 
 Guida pratica all'intelligenza artificiale in italiano — casi d'uso reali, tool, prompt engineering e AI per professionisti IT.
 
@@ -17,7 +17,7 @@ Guida pratica all'intelligenza artificiale in italiano — casi d'uso reali, too
 ## 📚 Contenuti
 
 ### 🛠️ Tool e Modelli
-- [Benchmark modelli AI 2025-2026](https://nicholasizzo.github.io/ai-practical-guide/benchmark-modelli-ai.html) — grafici interattivi su ragionamento, coding e matematica
+- [Benchmark modelli AI 2025-2026](https://nicholasiszzo.github.io/ai-practical-guide/benchmark-modelli-ai.html) — grafici interattivi su ragionamento, coding e matematica
 - [Quale AI usare per cosa](docs/quale-ai-per-cosa.md) — guida pratica alla scelta del modello giusto
 - [AI in locale vs cloud](docs/ai-locale-vs-cloud.md) — Ollama, LM Studio e quando ha senso usare AI offline
 
@@ -48,6 +48,10 @@ Guida pratica all'intelligenza artificiale in italiano — casi d'uso reali, too
 ### 💼 AI e Carriera
 - [AI nel mondo del lavoro IT](docs/ai-mondo-del-lavoro.md) — competenze richieste, certificazioni, come prepararsi
 
+### ⚡ AI a lavoro
+- [AI tool per la produttività](docs/ai-tool-produttivita.md) — trascrizione call, riassunti, flussi di lavoro completi con Whisper, Claude, Copilot e altri
+- [AI nelle aziende](docs/ai-nelle-aziende.md) — come le aziende stanno adottando l'AI, casi d'uso reali per settore
+
 ---
 
 ## 🗺️ Roadmap
@@ -65,6 +69,8 @@ Guida pratica all'intelligenza artificiale in italiano — casi d'uso reali, too
 - [x] Prompt Injection e sicurezza
 - [x] AI per lo studio (metodo PACER + NotebookLM)
 - [x] AI nel mondo del lavoro IT
+- [x] AI tool per la produttività
+- [x] AI nelle aziende
 - [ ] RAG — Retrieval Augmented Generation
 - [ ] Fine-tuning dei modelli
 - [ ] AI e automazione con n8n
@@ -75,7 +81,7 @@ Guida pratica all'intelligenza artificiale in italiano — casi d'uso reali, too
 
 **Nicholas Izzo** — Sistemista, studente L31 Informatica (specializzazione AI) @ Università Pegaso
 
-🌐 [nicholasizzo.github.io](https://nicholasizzo.github.io) · 🏠 [Homelab](https://github.com/NicholasIzzo/homelab)
+🌐 [nicholasiszzo.github.io](https://NicholasIzzo.github.io) · 🏠 [Homelab](https://github.com/NicholasIzzo/homelab)
 
 ---
 
