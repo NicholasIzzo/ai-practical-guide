@@ -1,114 +1,56 @@
-# 🏠 Homelab
+﻿# 🤖 AI Practical Guide
 
-Personal homelab setup documentation. This repository contains configurations, guides, and notes for my self-hosted infrastructure.
+Guida pratica all'intelligenza artificiale in italiano — casi d'uso reali, tool, prompt engineering e AI per professionisti IT.
 
-## 📐 Infrastructure Overview
-
-```
-Internet
-    │
-    ▼
-Router
-    │
-    ├── NAS (Ugreen DH4300 Plus)        → Docker services, storage
-    ├── Mini PC (HP ProDesk G400)        → Jellyfin media server
-    └── Personal PC (Windows 11)         → Daily use
-```
-
-All devices are connected via **Tailscale** for secure remote access, with **Nginx Proxy Manager** handling HTTPS and reverse proxying.
+> Un progetto pensato per chi vuole **usare** l'AI concretamente, non solo capire come funziona in teoria.
 
 ---
 
-## 🖥️ Hardware
+## 🎯 A chi è rivolto
 
-| Device | Model | Role |
-|---|---|---|
-| NAS | Ugreen DH4300 Plus | Docker host, storage, main services |
-| Mini PC | HP ProDesk G400 Mini (8GB RAM) | Jellyfin transcoding |
-| Personal PC | Windows 11 | Daily use |
+- Sistemisti e IT professional che vogliono integrare l'AI nel loro lavoro
+- Studenti di informatica che si avvicinano all'AI applicata
+- Chiunque voglia usare gli strumenti AI in modo consapevole ed efficace
 
 ---
 
-## 🐳 Docker Services (NAS)
+## 📚 Contenuti
 
-| Service | Description | Port |
-|---|---|---|
-| Vaultwarden | Self-hosted password manager (Bitwarden compatible) | `<PORT>` |
-| Nginx Proxy Manager | Reverse proxy with HTTPS | `<PORT>` |
-| Tailscale | VPN mesh network | - |
-| Pihole | Network-wide ad blocker | `<PORT>` |
-| Radarr | Movie management | `<PORT>` |
-| Sonarr | TV series management | `<PORT>` |
-| Prowlarr | Indexer manager | `<PORT>` |
-| qBittorrent + Gluetun | Torrent client with VPN | `<PORT>` |
-| Flaresolverr | Cloudflare bypass for indexers | `<PORT>` |
-| Prometheus | Metrics collection | `<PORT>` |
-| Grafana | Metrics visualization | `<PORT>` |
-| Node Exporter | System metrics exporter (NAS) | `<PORT>` |
-| cAdvisor | Docker container metrics | `<PORT>` |
+### 🧠 Capire l'AI
+- [Come funziona un LLM](docs/come-funziona-llm.md)
+- [AI e Privacy](docs/ai-e-privacy.md)
 
-## 🖥️ Services (Mini PC)
+### 🛠️ Tool e Modelli
+- [Quale AI usare per cosa](docs/quale-ai-per-cosa.md)
+- [AI in locale vs cloud](docs/ai-locale-vs-cloud.md)
+- [Tool AI per sviluppatori](docs/ai-tool-sviluppatori.md)
 
-| Service | Description |
-|---|---|
-| Jellyfin | Media server with hardware transcoding |
-| Node Exporter | System metrics exporter |
+### ✍️ Prompt Engineering
+- [Guida al prompt engineering](docs/prompt-engineering.md)
 
----
+### 💻 AI per IT e Sistemisti
+- [AI per sistemisti](docs/ai-per-sistemisti.md)
+- [AI e Python](docs/ai-e-python.md)
+- [AI Agents](docs/ai-agents.md)
 
-## 🔒 Security & Networking
+### 🛡️ Sicurezza AI
+- [AI per la sicurezza informatica](docs/ai-sicurezza-informatica.md)
+- [Prompt Injection e sicurezza](docs/prompt-injection-sicurezza.md)
 
-- **Tailscale** — All services are accessible only through Tailscale VPN, no ports exposed to the internet
-- **Nginx Proxy Manager** — Reverse proxy with SSL certificates generated via Tailscale HTTPS
-- **Pihole** — DNS-level ad blocking for the entire network
-- **Vaultwarden** — Self-hosted password manager, accessible only via Tailscale
+### 📚 AI per lo Studio
+- [AI per lo studio](docs/ai-per-lo-studio.md)
 
-### Network Access Pattern
-```
-Device (with Tailscale) → HTTPS → Nginx Proxy Manager → Service
-```
+### 💼 AI e Carriera
+- [AI nel mondo del lavoro IT](docs/ai-mondo-del-lavoro.md)
 
 ---
 
-## 📊 Monitoring
+## 👤 Autore
 
-Prometheus + Grafana stack for monitoring all devices:
+**Nicholas Izzo** — Sistemista, studente L31 Informatica (specializzazione AI) @ Università Pegaso
 
-- **Node Exporter** on NAS and Mini PC → CPU, RAM, disk, network metrics
-- **cAdvisor** on NAS → Docker container metrics
-- **Grafana dashboard** — Node Exporter Full (ID: 1860)
-- **Alerting** via Discord for service downtime
+🌐 [nicholasiszzo.github.io](https://NicholasIzzo.github.io) · 🏠 [Homelab](https://github.com/NicholasIzzo/homelab)
 
 ---
 
-## 📁 Repository Structure
-
-```
-homelab/
-├── README.md
-├── nas/
-│   └── README.md          # NAS setup and configuration
-├── minipc/
-│   └── README.md          # Mini PC + Jellyfin setup
-├── docker/
-│   ├── vaultwarden/       # Vaultwarden + NPM + SSL setup
-│   ├── prometheus/        # prometheus.yml config
-│   └── grafana/           # Grafana setup
-└── docs/
-    └── network.md         # Network architecture
-```
-
----
-
-## 🚀 Guides
-
-- [Vaultwarden with HTTPS via Tailscale + NPM](docker/vaultwarden/README.md)
-- [Prometheus + Grafana monitoring stack](docker/prometheus/README.md)
-- [Arr stack setup (Radarr, Sonarr, Prowlarr)](nas/README.md)
-
----
-
-## 📝 Notes
-
-- All sensitive data (IPs, ports, passwords, domains) are replaced with `<PLACEHOLDER>` throughout this repository
-- Tailscale is used instead of exposing ports publicly — no port forwarding on the router
+> *"L AI non sostituisce chi sa usarla — sostituisce chi non sa usarla."*
