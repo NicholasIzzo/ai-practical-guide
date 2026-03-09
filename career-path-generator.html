@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
@@ -84,7 +84,7 @@
       color: var(--accent);
       margin-bottom: 28px;
     }
-    .badge::before { content: '◆'; font-size: 8px; }
+    .badge::before { content: 'â—†'; font-size: 8px; }
 
     h1 {
       font-family: 'Syne', sans-serif;
@@ -402,7 +402,7 @@
       color: #c0cdd8;
     }
     .content-block li::before {
-      content: '→';
+      content: 'â†’';
       position: absolute;
       left: 0;
       color: var(--accent2);
@@ -499,34 +499,46 @@
         <span class="line1">Analizza il tuo CV.</span>
         <span class="line2">Costruisci il tuo futuro.</span>
       </h1>
-      <p class="subtitle">Incolla il tuo CV e scegli il ruolo che vuoi raggiungere. L'AI analizzerà le tue competenze e genererà un percorso formativo personalizzato.</p>
+      <p class="subtitle">Incolla il tuo CV e scegli il ruolo che vuoi raggiungere. L'AI analizzerÃ  le tue competenze e genererÃ  un percorso formativo personalizzato.</p>
     </header>
 
     <!-- Steps indicator -->
     <div class="steps">
-      <div class="step active" id="step1">
-        <div class="step-num">1</div>
-        <span>CV</span>
-      </div>
+      <div class="step active" id="step1"><div class="step-num">1</div><span>Key</span></div>
       <div class="step-divider"></div>
-      <div class="step" id="step2">
-        <div class="step-num">2</div>
-        <span>Obiettivo</span>
-      </div>
+      <div class="step" id="step2"><div class="step-num">2</div><span>CV</span></div>
       <div class="step-divider"></div>
-      <div class="step" id="step3">
-        <div class="step-num">3</div>
-        <span>Percorso</span>
-      </div>
+      <div class="step" id="step3"><div class="step-num">3</div><span>Obiettivo</span></div>
+      <div class="step-divider"></div>
+      <div class="step" id="step4"><div class="step-num">4</div><span>Percorso</span></div>
     </div>
 
     <!-- Form -->
     <div id="form-section">
+
+      <!-- API Key -->
+      <div class="card">
+        <div class="card-label">Step 00 — Accesso</div>
+        <h2>La tua API key Anthropic</h2>
+        <p>Serve per chiamare il modello AI dal tuo browser. Non viene mai salvata — esiste solo in questa sessione.</p>
+        <div style="position:relative;margin-bottom:12px">
+          <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." oninput="onApiKeyInput()" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 48px 14px 16px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color 0.2s" />
+          <button onclick="toggleKey()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px">&#128065;</button>
+        </div>
+        <div style="background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.12);border-radius:8px;padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.8">
+          &#128273; Non hai ancora una key? Creala su <a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--accent);text-decoration:none">console.anthropic.com/keys</a><br>
+          &#128161; I primi crediti sono gratuiti. Ogni analisi costa circa <strong style="color:var(--text)">    <!-- Form -->
+    <div id="form-section">
+      <!-- CV input -->.01</strong>.<br>
+          &#128274; La chiave rimane solo nel tuo browser, mai trasmessa a terzi.
+        </div>
+      </div>
+
       <!-- CV input -->
       <div class="card">
-        <div class="card-label">Step 01 — Il tuo CV</div>
+        <div class="card-label">Step 01 â€” Il tuo CV</div>
         <h2>Incolla il testo del tuo CV</h2>
-        <p>Copia il contenuto del tuo CV e incollalo qui sotto. Più dettagli fornisci, più preciso sarà il percorso generato.</p>
+        <p>Copia il contenuto del tuo CV e incollalo qui sotto. PiÃ¹ dettagli fornisci, piÃ¹ preciso sarÃ  il percorso generato.</p>
         <div class="textarea-wrap">
           <textarea id="cv-input" placeholder="Es: Sono un sistemista con 3 anni di esperienza in ambienti Linux. Ho gestito infrastrutture Docker, configurato VPN con WireGuard e Tailscale, e amministrato server Ubuntu. Certificazione AZ-900 conseguita nel 2024. Attualmente studio Informatica per le Aziende Digitali..."></textarea>
         </div>
@@ -534,33 +546,33 @@
 
       <!-- Role selector -->
       <div class="card">
-        <div class="card-label">Step 02 — Obiettivo</div>
+        <div class="card-label">Step 02 â€” Obiettivo</div>
         <h2>Quale ruolo vuoi raggiungere?</h2>
-        <p>Seleziona il ruolo target. Verrà usato per calibrare il gap analysis e il percorso formativo.</p>
+        <p>Seleziona il ruolo target. VerrÃ  usato per calibrare il gap analysis e il percorso formativo.</p>
         <div class="role-grid">
           <button class="role-btn" data-role="Cloud Architect">
-            <span class="role-icon">☁️</span>Cloud Architect
+            <span class="role-icon">â˜ï¸</span>Cloud Architect
           </button>
           <button class="role-btn" data-role="AI Engineer">
-            <span class="role-icon">🤖</span>AI Engineer
+            <span class="role-icon">ðŸ¤–</span>AI Engineer
           </button>
           <button class="role-btn" data-role="DevOps Engineer">
-            <span class="role-icon">⚙️</span>DevOps Engineer
+            <span class="role-icon">âš™ï¸</span>DevOps Engineer
           </button>
           <button class="role-btn" data-role="Cybersecurity Analyst">
-            <span class="role-icon">🛡️</span>Cybersecurity Analyst
+            <span class="role-icon">ðŸ›¡ï¸</span>Cybersecurity Analyst
           </button>
           <button class="role-btn" data-role="Data Engineer">
-            <span class="role-icon">📊</span>Data Engineer
+            <span class="role-icon">ðŸ“Š</span>Data Engineer
           </button>
           <button class="role-btn" data-role="Full Stack Developer">
-            <span class="role-icon">💻</span>Full Stack Developer
+            <span class="role-icon">ðŸ’»</span>Full Stack Developer
           </button>
           <button class="role-btn" data-role="Platform Engineer">
-            <span class="role-icon">🏗️</span>Platform Engineer
+            <span class="role-icon">ðŸ—ï¸</span>Platform Engineer
           </button>
           <button class="role-btn" data-role="IT Manager">
-            <span class="role-icon">👔</span>IT Manager
+            <span class="role-icon">ðŸ‘”</span>IT Manager
           </button>
         </div>
 
@@ -568,7 +580,7 @@
 
         <button class="btn-generate" id="generate-btn" disabled>
           <span class="btn-inner">
-            <span>⚡</span>
+            <span>âš¡</span>
             <span>Genera Percorso Formativo</span>
           </span>
         </button>
@@ -580,10 +592,10 @@
       <div class="loader-ring"></div>
       <div class="loader-text">Analisi in corso...</div>
       <div class="loader-steps">
-        <div class="loader-step" id="ls1">📄 Lettura del CV</div>
-        <div class="loader-step" id="ls2">🔍 Gap analysis competenze</div>
-        <div class="loader-step" id="ls3">🗺️ Costruzione percorso</div>
-        <div class="loader-step" id="ls4">📚 Selezione risorse</div>
+        <div class="loader-step" id="ls1">ðŸ“„ Lettura del CV</div>
+        <div class="loader-step" id="ls2">ðŸ” Gap analysis competenze</div>
+        <div class="loader-step" id="ls3">ðŸ—ºï¸ Costruzione percorso</div>
+        <div class="loader-step" id="ls4">ðŸ“š Selezione risorse</div>
       </div>
     </div>
 
@@ -591,19 +603,20 @@
     <div id="result">
       <div class="result-header">
         <h2>Il tuo percorso personale</h2>
-        <button class="btn-reset" id="reset-btn">← Ricomincia</button>
+        <button class="btn-reset" id="reset-btn">â† Ricomincia</button>
       </div>
       <div id="result-content"></div>
     </div>
   </div>
 
   <footer>
-    <p>Costruito da <a href="https://NicholasIzzo.github.io" target="_blank">Nicholas Izzo</a> ·
+    <p>Costruito da <a href="https://NicholasIzzo.github.io" target="_blank">Nicholas Izzo</a> Â·
     Parte di <a href="https://github.com/NicholasIzzo/ai-practical-guide" target="_blank">ai-practical-guide</a></p>
   </footer>
 
   <script>
-    const cvInput    = document.getElementById('cv-input');
+    const cvInput     = document.getElementById('cv-input');
+    const apiKeyInput = document.getElementById('api-key-input');
     const generateBtn = document.getElementById('generate-btn');
     const formSection = document.getElementById('form-section');
     const loader     = document.getElementById('loader');
@@ -613,6 +626,13 @@
     const resetBtn   = document.getElementById('reset-btn');
 
     let selectedRole = null;
+
+    function toggleKey() { apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password'; }
+    function onApiKeyInput() {
+      const v = apiKeyInput.value.trim();
+      apiKeyInput.style.borderColor = (v.startsWith('sk-ant-') && v.length > 30) ? 'var(--accent3)' : 'var(--border)';
+      updateSteps(); checkReady();
+    }
 
     // Role selection
     document.querySelectorAll('.role-btn').forEach(btn => {
@@ -639,7 +659,8 @@
     }
 
     function checkReady() {
-      generateBtn.disabled = !(cvInput.value.trim().length > 50 && selectedRole);
+      const hasKey = apiKeyInput.value.trim().startsWith('sk-ant-') && apiKeyInput.value.trim().length > 30;
+      generateBtn.disabled = !(hasKey && cvInput.value.trim().length > 50 && selectedRole);
     }
 
     // Generate
@@ -661,7 +682,12 @@
       try {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKeyInput.value.trim(),
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
           body: JSON.stringify({
             model: 'claude-sonnet-4-20250514',
             max_tokens: 1000,
@@ -677,7 +703,7 @@ Rispondi SOLO con un oggetto JSON valido, senza markdown, senza backtick, nessun
   "punti_forza": ["punto1", "punto2", "punto3"],
   "gap_principali": ["gap1", "gap2", "gap3"],
   "certificazioni": [
-    {"nome": "nome cert", "priorita": "Alta/Media/Bassa", "motivo": "perché serve"}
+    {"nome": "nome cert", "priorita": "Alta/Media/Bassa", "motivo": "perchÃ© serve"}
   ],
   "roadmap": [
     {"fase": "Mese 1-2", "obiettivo": "titolo", "dettaglio": "cosa fare in concreto"},
@@ -711,7 +737,7 @@ Rispondi SOLO con un oggetto JSON valido, senza markdown, senza backtick, nessun
       } catch (err) {
         loader.classList.remove('visible');
         formSection.style.display = 'block';
-        errorBox.textContent = '⚠️ ' + (err.message || 'Errore durante la generazione. Riprova.');
+        errorBox.textContent = 'âš ï¸ ' + (err.message || 'Errore durante la generazione. Riprova.');
         errorBox.classList.add('visible');
         console.error(err);
       }
@@ -738,7 +764,7 @@ Rispondi SOLO con un oggetto JSON valido, senza markdown, senza backtick, nessun
         </div>
 
         <!-- Strengths -->
-        ${makeSection('💪', 'Punti di forza', `
+        ${makeSection('ðŸ’ª', 'Punti di forza', `
           <div class="content-block">
             <ul>${d.punti_forza.map(p => `<li>${p}</li>`).join('')}</ul>
             <div class="tags" style="margin-top:16px">
@@ -748,7 +774,7 @@ Rispondi SOLO con un oggetto JSON valido, senza markdown, senza backtick, nessun
         `, true)}
 
         <!-- Gaps -->
-        ${makeSection('🎯', 'Gap da colmare', `
+        ${makeSection('ðŸŽ¯', 'Gap da colmare', `
           <div class="content-block">
             <ul>${d.gap_principali.map(g => `<li>${g}</li>`).join('')}</ul>
             <div class="tags" style="margin-top:16px">
@@ -758,17 +784,17 @@ Rispondi SOLO con un oggetto JSON valido, senza markdown, senza backtick, nessun
         `)}
 
         <!-- Certs -->
-        ${makeSection('🏆', 'Certificazioni consigliate', `
+        ${makeSection('ðŸ†', 'Certificazioni consigliate', `
           <div class="content-block">
             ${d.certificazioni.map(c => `
-              <h3>${c.nome} <span style="font-size:11px;font-weight:400;color:var(--muted)">— ${c.priorita}</span></h3>
+              <h3>${c.nome} <span style="font-size:11px;font-weight:400;color:var(--muted)">â€” ${c.priorita}</span></h3>
               <p>${c.motivo}</p>
             `).join('')}
           </div>
         `)}
 
         <!-- Roadmap -->
-        ${makeSection('🗺️', 'Roadmap step-by-step', `
+        ${makeSection('ðŸ—ºï¸', 'Roadmap step-by-step', `
           <div class="timeline">
             ${d.roadmap.map(r => `
               <div class="tl-item">
@@ -780,10 +806,10 @@ Rispondi SOLO con un oggetto JSON valido, senza markdown, senza backtick, nessun
         `)}
 
         <!-- Risorse -->
-        ${makeSection('📚', 'Risorse consigliate', `
+        ${makeSection('ðŸ“š', 'Risorse consigliate', `
           <div class="content-block">
             ${d.risorse.map(r => `
-              <h3>${r.nome} <span style="font-size:11px;font-weight:400;color:var(--muted)">· ${r.tipo}</span></h3>
+              <h3>${r.nome} <span style="font-size:11px;font-weight:400;color:var(--muted)">Â· ${r.tipo}</span></h3>
               <p>${r.link_testo}</p>
             `).join('')}
           </div>
@@ -815,7 +841,7 @@ Rispondi SOLO con un oggetto JSON valido, senza markdown, senza backtick, nessun
           <div class="section-header">
             <span class="section-icon">${icon}</span>
             <span class="section-title">${title}</span>
-            <span class="section-toggle">▼</span>
+            <span class="section-toggle">â–¼</span>
           </div>
           <div class="section-body">${body}</div>
         </div>
@@ -836,3 +862,4 @@ Rispondi SOLO con un oggetto JSON valido, senza markdown, senza backtick, nessun
   </script>
 </body>
 </html>
+
