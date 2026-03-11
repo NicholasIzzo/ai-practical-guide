@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>AI ROI Calculator — Costi e Benefici Reali</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --bg:#050709;--surface:#0c1018;--surface2:#111820;--border:#1c2535;
+      --accent:#00e5ff;--accent2:#7b61ff;--accent3:#00ff88;--danger:#ff4d6d;--yellow:#ffd166;
+      --text:#e2eaf2;--muted:#4a5a6e;--muted2:#8a9ab0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.018) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+    .orb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0}
+    .orb-1{width:600px;height:600px;background:rgba(0,229,255,.04);top:-200px;right:-150px}
+    .orb-2{width:500px;height:500px;background:rgba(123,97,255,.05);bottom:-100px;left:-150px}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+    /* HEADER */
+    header{padding:64px 0 40px;text-align:center}
+    .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);border-radius:100px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:24px}
+    .badge::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 2s infinite}
+    h1{font-family:'Syne',sans-serif;font-size:clamp(30px,5vw,58px);font-weight:800;line-height:1.05;letter-spacing:-.02em;margin-bottom:14px}
+    h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .subtitle{color:var(--muted2);font-size:14px;line-height:1.8;max-width:580px;margin:0 auto 48px}
+
+    /* FILTERS */
+    .filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;align-items:center}
+    .filter-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase;margin-right:4px}
+    .filter-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);cursor:pointer;transition:all .2s}
+    .filter-btn:hover{border-color:var(--accent);color:var(--text)}
+    .filter-btn.active{border-color:var(--accent);background:rgba(0,229,255,.08);color:var(--accent)}
+    .filter-sep{width:1px;height:24px;background:var(--border);margin:0 4px}
+
+    /* SUMMARY CARDS */
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+    .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+    .sum-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--accent);line-height:1}
+    .sum-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
+
+    /* TOOL CARDS */
+    .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:40px}
+    .tool-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;transition:all .3s;position:relative;overflow:hidden}
+    .tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .3s}
+    .tool-card:hover{border-color:rgba(0,229,255,.25);transform:translateY(-2px)}
+    .tool-card:hover::before{opacity:1}
+    .tool-card.hidden{display:none}
+    .tc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+    .tc-cat{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:4px;border:1px solid}
+    .cat-produttivita{color:#00e5ff;border-color:rgba(0,229,255,.2);background:rgba(0,229,255,.06)}
+    .cat-coding{color:#7b61ff;border-color:rgba(123,97,255,.2);background:rgba(123,97,255,.06)}
+    .cat-sicurezza{color:#ff4d6d;border-color:rgba(255,77,109,.2);background:rgba(255,77,109,.06)}
+    .cat-hr{color:#ffd166;border-color:rgba(255,209,102,.2);background:rgba(255,209,102,.06)}
+    .cat-customer{color:#00ff88;border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.06)}
+    .tc-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}
+    .tc-vendor{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2)}
+    .tc-desc{font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:16px}
+
+    /* ROI bar */
+    .roi-section{margin-bottom:16px}
+    .roi-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px}
+    .roi-label{color:var(--muted2)}
+    .roi-val{font-family:'DM Mono',monospace;color:var(--text)}
+    .bar-wrap{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+
+    /* Pricing */
+    .pricing-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .price-tag{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;border:1px solid}
+    .price-free{color:var(--accent3);border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.06)}
+    .price-paid{color:var(--danger);border-color:rgba(255,77,109,.2);background:rgba(255,77,109,.06)}
+    .price-freemium{color:var(--accent);border-color:rgba(0,229,255,.2);background:rgba(0,229,255,.06)}
+
+    /* Compliance */
+    .compliance-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+    .comp-tag{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:4px}
+    .comp-ok{background:rgba(0,255,136,.08);color:var(--accent3);border:1px solid rgba(0,255,136,.15)}
+    .comp-warn{background:rgba(255,209,102,.08);color:var(--yellow);border:1px solid rgba(255,209,102,.15)}
+    .comp-no{background:rgba(255,77,109,.08);color:var(--danger);border:1px solid rgba(255,77,109,.15)}
+
+    /* Alt */
+    .alt-row{font-size:11px;color:var(--muted2);line-height:1.7;padding-top:12px;border-top:1px solid var(--border)}
+    .alt-row strong{color:var(--text)}
+
+    /* CHART SECTION */
+    .chart-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:32px}
+    .cs-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+    .cs-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px}
+    .cs-desc{font-size:12px;color:var(--muted2);line-height:1.7;margin-bottom:24px}
+    .chart-wrap{position:relative;height:300px}
+    .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px}
+
+    /* COMPLIANCE TABLE */
+    .comp-table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:11px}
+    th{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+    td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.03);color:#c0cdd8;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(255,255,255,.02)}
+
+    footer{text-align:center;padding:40px 0 28px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+    footer a{color:var(--accent);text-decoration:none}
+
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    @media(max-width:700px){
+      .summary-grid{grid-template-columns:repeat(2,1fr)}
+      .charts-row{grid-template-columns:1fr}
+      .tools-grid{grid-template-columns:1fr}
+      .filters{gap:8px}
+    }
+  </style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="wrap">
+
+  <header>
+    <div class="badge">AI ROI — Costi e Benefici Reali</div>
+    <h1>Quanto vale l'AI<br><span>per la tua azienda?</span></h1>
+    <p class="subtitle">Dati concreti su tempo risparmiato, costi, alternative e compliance per 20+ tool AI. Filtra per categoria e dimensione aziendale per trovare le soluzioni giuste per te.</p>
+  </header>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <span class="filter-label">Categoria</span>
+    <button class="filter-btn active" onclick="filterCat('all',this)">Tutti</button>
+    <button class="filter-btn" onclick="filterCat('produttivita',this)">Produttività</button>
+    <button class="filter-btn" onclick="filterCat('coding',this)">Coding</button>
+    <button class="filter-btn" onclick="filterCat('sicurezza',this)">Sicurezza</button>
+    <button class="filter-btn" onclick="filterCat('hr',this)">HR</button>
+    <button class="filter-btn" onclick="filterCat('customer',this)">Customer</button>
+    <div class="filter-sep"></div>
+    <span class="filter-label">Azienda</span>
+    <button class="filter-btn active" onclick="filterSize('all',this)" id="sizeAll">Tutte</button>
+    <button class="filter-btn" onclick="filterSize('pmi',this)">PMI</button>
+    <button class="filter-btn" onclick="filterSize('enterprise',this)">Enterprise</button>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-grid" id="summaryGrid">
+    <div class="sum-card"><div class="sum-num" id="sumTools">20</div><div class="sum-label">Tool analizzati</div></div>
+    <div class="sum-card"><div class="sum-num" id="sumSave">12h</div><div class="sum-label">Risparmio medio/sett.</div></div>
+    <div class="sum-card"><div class="sum-num" id="sumFree">9</div><div class="sum-label">Soluzioni gratuite</div></div>
+    <div class="sum-card"><div class="sum-num" id="sumRoi">340%</div><div class="sum-label">ROI medio stimato</div></div>
+  </div>
+
+  <!-- CHARTS ROW -->
+  <div class="charts-row">
+    <div class="chart-section">
+      <div class="cs-label">Confronto per categoria</div>
+      <div class="cs-title">Tempo risparmiato</div>
+      <div class="cs-desc">Ore medie risparmiate a settimana per categoria di tool, su un team di 5 persone.</div>
+      <div class="chart-wrap"><canvas id="chartTime"></canvas></div>
+    </div>
+    <div class="chart-section">
+      <div class="cs-label">Costo vs Risparmio</div>
+      <div class="cs-title">ROI per categoria</div>
+      <div class="cs-desc">Rapporto tra costo mensile del tool e valore del tempo risparmiato (€20/ora media).</div>
+      <div class="chart-wrap"><canvas id="chartROI"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TOOL CARDS -->
+  <div class="tools-grid" id="toolsGrid"></div>
+
+  <!-- COMPLIANCE TABLE -->
+  <div class="chart-section">
+    <div class="cs-label">Compliance & Policy aziendale</div>
+    <div class="cs-title">Cosa puoi usare in azienda</div>
+    <div class="cs-desc">Panoramica GDPR, data residency e idoneità aziendale per i principali tool AI. Verifica sempre con il tuo DPO per dati sensibili.</div>
+    <div class="comp-table-wrap">
+      <table>
+        <thead>
+          <tr><th>Tool</th><th>Dati inviati a</th><th>GDPR</th><th>Data EU</th><th>Uso aziendale</th><th>Note</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Whisper (locale)</td><td>Nessuno — locale</td><td><span class="comp-tag comp-ok">✓ Compliant</span></td><td><span class="comp-tag comp-ok">✓ Locale</span></td><td><span class="comp-tag comp-ok">✓ Libero</span></td><td>Nessun dato trasmesso</td></tr>
+          <tr><td>Claude (Anthropic)</td><td>Server USA</td><td><span class="comp-tag comp-warn">⚠ DPA richiesto</span></td><td><span class="comp-tag comp-warn">⚠ Parziale</span></td><td><span class="comp-tag comp-warn">⚠ Verifica DPO</span></td><td>API business: no training sui dati</td></tr>
+          <tr><td>ChatGPT (OpenAI)</td><td>Server USA</td><td><span class="comp-tag comp-warn">⚠ DPA richiesto</span></td><td><span class="comp-tag comp-warn">⚠ Parziale</span></td><td><span class="comp-tag comp-warn">⚠ Verifica DPO</span></td><td>Enterprise: zero data retention</td></tr>
+          <tr><td>Copilot M365</td><td>Microsoft EU</td><td><span class="comp-tag comp-ok">✓ Compliant</span></td><td><span class="comp-tag comp-ok">✓ EU</span></td><td><span class="comp-tag comp-ok">✓ Enterprise ready</span></td><td>Dati nel tenant aziendale</td></tr>
+          <tr><td>GitHub Copilot</td><td>Server USA</td><td><span class="comp-tag comp-warn">⚠ DPA richiesto</span></td><td><span class="comp-tag comp-no">✗ Non EU</span></td><td><span class="comp-tag comp-warn">⚠ Policy codice</span></td><td>Non inviare codice proprietario senza policy</td></tr>
+          <tr><td>Cursor</td><td>Server USA</td><td><span class="comp-tag comp-warn">⚠ DPA richiesto</span></td><td><span class="comp-tag comp-no">✗ Non EU</span></td><td><span class="comp-tag comp-warn">⚠ Verifica DPO</span></td><td>Modalità privacy disponibile</td></tr>
+          <tr><td>Otter.ai</td><td>Server USA</td><td><span class="comp-tag comp-warn">⚠ DPA richiesto</span></td><td><span class="comp-tag comp-no">✗ Non EU</span></td><td><span class="comp-tag comp-warn">⚠ No dati sensibili</span></td><td>Non usare per call con dati riservati</td></tr>
+          <tr><td>tl;dv</td><td>Server EU disponibile</td><td><span class="comp-tag comp-ok">✓ Compliant</span></td><td><span class="comp-tag comp-ok">✓ EU opzione</span></td><td><span class="comp-tag comp-ok">✓ Business ready</span></td><td>Seleziona EU region nelle impostazioni</td></tr>
+          <tr><td>Gemini (Google)</td><td>Server Google EU</td><td><span class="comp-tag comp-ok">✓ Compliant</span></td><td><span class="comp-tag comp-ok">✓ EU</span></td><td><span class="comp-tag comp-warn">⚠ Workspace only</span></td><td>Solo con Google Workspace aziendale</td></tr>
+          <tr><td>Ollama / LM Studio</td><td>Nessuno — locale</td><td><span class="comp-tag comp-ok">✓ Compliant</span></td><td><span class="comp-tag comp-ok">✓ Locale</span></td><td><span class="comp-tag comp-ok">✓ Libero</span></td><td>Ideale per dati sensibili</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    Dati stimati su base ricerche pubbliche e test diretti · Aggiornato marzo 2026<br>
+    Parte di <a href="https://github.com/NicholasIzzo/ai-practical-guide" target="_blank">ai-practical-guide</a> by Nicholas Izzo —
+    <a href="https://nicholasizzo.github.io/ai-practical-guide/" target="_blank">nicholasizzo.github.io/ai-practical-guide</a>
+  </footer>
+</div>
+
+<script>
+const TOOLS=[
+  // PRODUTTIVITÀ
+  {name:'Whisper',vendor:'OpenAI (open source)',cat:'produttivita',size:['pmi','enterprise'],
+   desc:'Trascrizione audio e video in locale. Supporta italiano, non invia dati a nessun server. Ideale per call, riunioni, interviste.',
+   risparmio:2.5,costoMese:0,roi:500,
+   useCases:'Verbali riunioni automatici, trascrizione interviste HR, sottotitoli video aziendali',
+   tempoP:'30 min/call','tempoA':'4 min/call',
+   pricing:[{label:'€0 — Gratuito',cls:'price-free'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ Locale',cls:'comp-ok'},{label:'✓ No cloud',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Otter.ai (€17/mese, cloud USA), tl;dv (gratuito, EU), Teams Premium (€7/mese, Microsoft)'
+  },
+  {name:'Claude',vendor:'Anthropic',cat:'produttivita',size:['pmi','enterprise'],
+   desc:'LLM avanzato per scrittura, analisi documenti, riassunti email, report. Eccellente su testi lunghi e contesti complessi.',
+   risparmio:3.5,costoMese:20,roi:420,
+   useCases:'Riassunti PDF, email professionali, report settimanali, analisi contratti, documentazione',
+   tempoP:'45 min','tempoA':'6 min',
+   pricing:[{label:'Gratuito (limitato)',cls:'price-freemium'},{label:'€20/mese Pro',cls:'price-paid'}],
+   compliance:[{label:'⚠ DPA richiesto',cls:'comp-warn'},{label:'⚠ Server USA',cls:'comp-warn'},{label:'✓ No training (API)',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> ChatGPT Plus (€20/mese), Copilot M365 (€30/mese, EU), Gemini Advanced (€22/mese)'
+  },
+  {name:'tl;dv',vendor:'tl;dv GmbH',cat:'produttivita',size:['pmi','enterprise'],
+   desc:'Registrazione e riassunto automatico di call Zoom e Google Meet. Clip intelligenti, integrazione CRM, note condivisibili.',
+   risparmio:2.0,costoMese:0,roi:380,
+   useCases:'Note riunioni automatiche, clip per clienti, follow-up call vendita, onboarding',
+   tempoP:'20 min/call','tempoA':'2 min/call',
+   pricing:[{label:'Gratuito (illimitato base)',cls:'price-free'},{label:'€29/mese Pro',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ Server EU',cls:'comp-ok'},{label:'✓ Business ready',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Otter.ai (USA), Fireflies (USA), Teams Premium (Microsoft ecosystem)'
+  },
+  {name:'Notion AI',vendor:'Notion Labs',cat:'produttivita',size:['pmi'],
+   desc:'AI integrata in Notion per riassumere note, generare testi, creare tabelle e gestire knowledge base aziendale.',
+   risparmio:1.5,costoMese:10,roi:210,
+   useCases:'Knowledge base aziendale, wiki interni, meeting notes, brainstorming, SOP',
+   tempoP:'60 min','tempoA':'15 min',
+   pricing:[{label:'+€10/mese add-on',cls:'price-paid'}],
+   compliance:[{label:'⚠ Server USA',cls:'comp-warn'},{label:'⚠ DPA disponibile',cls:'comp-warn'}],
+   alt:'<strong>Alternative:</strong> Confluence AI (Atlassian, enterprise), Coda AI, SharePoint Copilot (Microsoft EU)'
+  },
+  {name:'Copilot M365',vendor:'Microsoft',cat:'produttivita',size:['enterprise'],
+   desc:'AI integrata in tutto l\'ecosistema Microsoft: Word, Excel, Outlook, Teams, PowerPoint. Dati nel tenant aziendale.',
+   risparmio:4.0,costoMese:30,roi:380,
+   useCases:'Email Outlook, riassunti Teams, analisi Excel, presentazioni PowerPoint, ricerca SharePoint',
+   tempoP:'varies','tempoA':'varies',
+   pricing:[{label:'€30/utente/mese',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ Server EU',cls:'comp-ok'},{label:'✓ Enterprise ready',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Google Workspace AI (€22/mese), Slack AI (€10/mese add-on)'
+  },
+  {name:'Otter.ai',vendor:'Otter.ai Inc.',cat:'produttivita',size:['pmi'],
+   desc:'Trascrizione in tempo reale durante call. Bot partecipante automatico, riassunti e action items post-riunione.',
+   risparmio:1.8,costoMese:17,roi:180,
+   useCases:'Verbali automatici, action items da call, trascrizione interviste, note per CRM',
+   tempoP:'25 min/call','tempoA':'3 min/call',
+   pricing:[{label:'300 min/mese gratis',cls:'price-freemium'},{label:'€17/mese Pro',cls:'price-paid'}],
+   compliance:[{label:'⚠ Server USA',cls:'comp-warn'},{label:'⚠ Non per dati riservati',cls:'comp-warn'}],
+   alt:'<strong>Alternative:</strong> Whisper locale (gratis, GDPR), tl;dv (EU), Teams Premium'
+  },
+  // CODING
+  {name:'GitHub Copilot',vendor:'Microsoft/OpenAI',cat:'coding',size:['pmi','enterprise'],
+   desc:'Completamento codice AI direttamente in VS Code e altri IDE. Genera funzioni da commenti, spiega codice, suggerisce fix.',
+   risparmio:3.0,costoMese:10,roi:580,
+   useCases:'Completamento codice, generazione script, code review, documentazione automatica, test',
+   tempoP:'60 min','tempoA':'20 min',
+   pricing:[{label:'Gratuito (studenti/OSS)',cls:'price-free'},{label:'€10/mese Individual',cls:'price-paid'},{label:'€19/mese Business',cls:'price-paid'}],
+   compliance:[{label:'⚠ Server USA',cls:'comp-warn'},{label:'⚠ Policy codice',cls:'comp-warn'},{label:'✓ No training (Business)',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Cursor (€20/mese, più potente), Tabnine (on-premise disponibile), Codeium (gratuito)'
+  },
+  {name:'Cursor',vendor:'Anysphere',cat:'coding',size:['pmi','enterprise'],
+   desc:'Editor basato su VS Code con AI profonda integrata. Chat con il codice, refactoring intelligente, debug conversazionale.',
+   risparmio:4.0,costoMese:20,roi:480,
+   useCases:'Debug complesso, refactoring, comprensione codebase esistente, generazione componenti',
+   tempoP:'90 min','tempoA':'25 min',
+   pricing:[{label:'Gratuito (limitato)',cls:'price-freemium'},{label:'€20/mese Pro',cls:'price-paid'}],
+   compliance:[{label:'⚠ Server USA',cls:'comp-warn'},{label:'✓ Privacy mode',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> GitHub Copilot (€10/mese, più integrato), Codeium (gratuito), JetBrains AI'
+  },
+  {name:'Codeium',vendor:'Exafunction',cat:'coding',size:['pmi','enterprise'],
+   desc:'Alternativa gratuita a GitHub Copilot. Completamento codice AI in 40+ linguaggi, chat integrata, supporto IDE multipli.',
+   risparmio:2.5,costoMese:0,roi:700,
+   useCases:'Completamento codice, chat per spiegazioni, refactoring base, generazione test',
+   tempoP:'60 min','tempoA':'22 min',
+   pricing:[{label:'€0 — Gratuito',cls:'price-free'},{label:'€12/mese Teams',cls:'price-paid'}],
+   compliance:[{label:'⚠ Server USA',cls:'comp-warn'},{label:'✓ Self-hosted opzione',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> GitHub Copilot (più maturo), Tabnine (self-hosted, GDPR), Continue.dev (open source)'
+  },
+  {name:'Tabnine',vendor:'Tabnine',cat:'coding',size:['enterprise'],
+   desc:'Completamento codice AI con opzione self-hosted on-premise. Ideale per enterprise con requisiti GDPR stringenti sul codice.',
+   risparmio:2.5,costoMese:15,roi:320,
+   useCases:'Completamento codice in ambienti air-gapped, codice proprietario sensibile, compliance enterprise',
+   tempoP:'60 min','tempoA':'24 min',
+   pricing:[{label:'€15/mese Dev',cls:'price-paid'},{label:'Enterprise su richiesta',cls:'price-paid'}],
+   compliance:[{label:'✓ Self-hosted',cls:'comp-ok'},{label:'✓ GDPR (on-prem)',cls:'comp-ok'},{label:'✓ No cloud opzione',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> GitHub Copilot (più semplice), Continue.dev + Ollama (open source, locale)'
+  },
+  // SICUREZZA
+  {name:'Darktrace',vendor:'Darktrace',cat:'sicurezza',size:['enterprise'],
+   desc:'AI per cybersecurity che analizza il comportamento di rete in tempo reale. Rileva anomalie e minacce zero-day automaticamente.',
+   risparmio:5.0,costoMese:500,roi:280,
+   useCases:'Threat detection, anomaly detection, risposta automatica agli incidenti, analisi comportamentale',
+   tempoP:'Manual monitoring',tempoA:'AI continuous',
+   pricing:[{label:'Da €500/mese (custom)',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR compliant',cls:'comp-ok'},{label:'✓ ISO 27001',cls:'comp-ok'},{label:'✓ SOC2',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Microsoft Sentinel AI (Azure), CrowdStrike AI, Vectra AI'
+  },
+  {name:'Microsoft Sentinel',vendor:'Microsoft',cat:'sicurezza',size:['enterprise'],
+   desc:'SIEM/SOAR cloud con AI integrata. Analisi log automatica, hunting delle minacce, correlazione eventi di sicurezza.',
+   risparmio:6.0,costoMese:200,roi:420,
+   useCases:'SIEM aziendale, analisi log automatica, incident response, compliance reporting',
+   tempoP:'Manual log review','tempoA':'AI-assisted',
+   pricing:[{label:'~€2/GB di log/giorno',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ Server EU',cls:'comp-ok'},{label:'✓ Enterprise',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Splunk AI, Elastic SIEM, Google Chronicle'
+  },
+  {name:'Snyk AI',vendor:'Snyk',cat:'sicurezza',size:['pmi','enterprise'],
+   desc:'Scansione automatica di vulnerabilità nel codice con fix AI-assisted. Integrazione CI/CD, analisi dipendenze, IaC security.',
+   risparmio:2.0,costoMese:0,roi:450,
+   useCases:'Security nel CI/CD, dependency scanning, fix automatici vulnerabilità, SAST/SCA',
+   tempoP:'Manual review','tempoA':'AI scan',
+   pricing:[{label:'Gratuito (OSS)',cls:'price-free'},{label:'€25/mese Team',cls:'price-paid'}],
+   compliance:[{label:'✓ SOC2',cls:'comp-ok'},{label:'⚠ Server USA',cls:'comp-warn'},{label:'✓ Enterprise EU',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> GitHub Advanced Security, SonarQube, Semgrep'
+  },
+  {name:'Wiz',vendor:'Wiz Inc.',cat:'sicurezza',size:['enterprise'],
+   desc:'Cloud security posture management con AI. Identifica rischi su AWS/Azure/GCP, prioritizza vulnerabilità critiche.',
+   risparmio:4.0,costoMese:300,roi:350,
+   useCases:'Cloud security, misconfiguration detection, compliance cloud, vulnerability prioritization',
+   tempoP:'Manual audit','tempoA':'Continuous AI',
+   pricing:[{label:'Custom pricing',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ SOC2 Type II',cls:'comp-ok'},{label:'✓ ISO 27001',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Prisma Cloud, Microsoft Defender for Cloud, Orca Security'
+  },
+  // HR
+  {name:'Paradox (Olivia)',vendor:'Paradox',cat:'hr',size:['enterprise'],
+   desc:'Assistente AI per recruiting che gestisce screening candidati, scheduling colloqui e onboarding via chat automatica.',
+   risparmio:5.0,costoMese:400,roi:310,
+   useCases:'Screening CV automatico, scheduling colloqui, FAQ candidati, onboarding documentale',
+   tempoP:'3h/candidato','tempoA':'40 min/candidato',
+   pricing:[{label:'Custom pricing',cls:'price-paid'}],
+   compliance:[{label:'⚠ Bias AI da monitorare',cls:'comp-warn'},{label:'✓ GDPR opzione',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> HireVue, Workday AI, SmartRecruiters AI'
+  },
+  {name:'Leena AI',vendor:'Leena AI',cat:'hr',size:['enterprise'],
+   desc:'HR chatbot AI per rispondere a domande dei dipendenti su policy, benefit, ferie, payroll. Integra con HRIS esistenti.',
+   risparmio:3.0,costoMese:300,roi:280,
+   useCases:'Employee self-service, HR FAQ, policy lookup, ticket HR automatici, onboarding',
+   tempoP:'15 min/richiesta HR','tempoA':'2 min/richiesta',
+   pricing:[{label:'Custom pricing',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ SSO enterprise',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> ServiceNow HR AI, SAP SuccessFactors AI, Workday Assist'
+  },
+  {name:'Textio',vendor:'Textio',cat:'hr',size:['pmi','enterprise'],
+   desc:'AI per scrivere job description inclusive e performanti. Suggerisce modifiche per aumentare la qualità dei candidati e ridurre bias.',
+   risparmio:1.5,costoMese:55,roi:240,
+   useCases:'Job description, performance review, feedback dipendenti, comunicazioni HR inclusive',
+   tempoP:'2h/job posting','tempoA':'30 min',
+   pricing:[{label:'Da €55/mese',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ Bias audit',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Ongig, Gender Decoder (gratuito, base), LinkedIn Job Description AI'
+  },
+  // CUSTOMER SERVICE
+  {name:'Intercom Fin AI',vendor:'Intercom',cat:'customer',size:['pmi','enterprise'],
+   desc:'Agente AI per customer support che risolve autonomamente fino al 50% dei ticket. Integra con knowledge base aziendale.',
+   risparmio:6.0,costoMese:99,roi:520,
+   useCases:'Supporto clienti 24/7, deflection ticket, FAQ dinamiche, escalation intelligente',
+   tempoP:'8 min/ticket medio','tempoA':'1.5 min/ticket',
+   pricing:[{label:'€99/mese Starter',cls:'price-paid'},{label:'€0.99/ticket risolto',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ SOC2',cls:'comp-ok'},{label:'✓ Server EU opzione',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Zendesk AI, Freshdesk AI, Tidio (PMI), HubSpot AI'
+  },
+  {name:'Zendesk AI',vendor:'Zendesk',cat:'customer',size:['enterprise'],
+   desc:'AI integrata in Zendesk per triage automatico ticket, suggerimenti agenti, analisi sentiment clienti e reportistica.',
+   risparmio:5.0,costoMese:55,roi:420,
+   useCases:'Triage ticket, suggerimenti risposta, CSAT prediction, routing automatico, analisi trend',
+   tempoP:'10 min/ticket','tempoA':'3 min/ticket',
+   pricing:[{label:'€55/agente/mese (AI inclusa)',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ ISO 27001',cls:'comp-ok'},{label:'✓ Server EU',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Intercom Fin, Freshdesk AI, Salesforce Einstein'
+  },
+  {name:'Tidio',vendor:'Tidio',cat:'customer',size:['pmi'],
+   desc:'Live chat con AI per PMI. Chatbot Lyro risolve richieste comuni, qualifica lead e integra con e-commerce.',
+   risparmio:3.0,costoMese:0,roi:480,
+   useCases:'Chat sito web, qualificazione lead, FAQ automatiche, integrazione Shopify/WooCommerce',
+   tempoP:'varies','tempoA':'varies',
+   pricing:[{label:'Gratuito (base)',cls:'price-free'},{label:'€29/mese Lyro AI',cls:'price-paid'}],
+   compliance:[{label:'✓ GDPR',cls:'comp-ok'},{label:'✓ Server EU',cls:'comp-ok'}],
+   alt:'<strong>Alternative:</strong> Crisp (EU, freemium), HubSpot Chat (freemium), Intercom (enterprise)'
+  },
+];
+
+// ── STATE ──
+let catFilter='all';
+let sizeFilter='all';
+
+function filterCat(cat, btn){
+  catFilter=cat;
+  document.querySelectorAll('.filters .filter-btn').forEach(b=>{
+    if(['all','produttivita','coding','sicurezza','hr','customer'].includes(b.textContent.toLowerCase().trim().replace('à','a'))||b.onclick?.toString().includes("filter('")){
+      // reset only category buttons
+    }
+  });
+  // reset category buttons only
+  document.querySelectorAll('.filter-btn').forEach(b=>{
+    const fn=b.getAttribute('onclick')||'';
+    if(fn.startsWith("filterCat('")){b.classList.remove('active')}
+  });
+  btn.classList.add('active');
+  renderCards();
+  updateSummary();
+}
+
+function filterSize(size,btn){
+  sizeFilter=size;
+  document.querySelectorAll('.filter-btn').forEach(b=>{
+    const fn=b.getAttribute('onclick')||'';
+    if(fn.startsWith("filterSize(")){b.classList.remove('active')}
+  });
+  btn.classList.add('active');
+  renderCards();
+  updateSummary();
+}
+
+function getFiltered(){
+  return TOOLS.filter(t=>{
+    const catOk=catFilter==='all'||t.cat===catFilter;
+    const sizeOk=sizeFilter==='all'||t.size.includes(sizeFilter);
+    return catOk&&sizeOk;
+  });
+}
+
+function renderCards(){
+  const filtered=getFiltered();
+  const grid=document.getElementById('toolsGrid');
+  grid.innerHTML=filtered.map(t=>{
+    const maxRoi=700;
+    const roiPct=Math.min(t.roi/maxRoi*100,100);
+    const maxH=6;
+    const hPct=Math.min(t.risparmio/maxH*100,100);
+    const catClass='cat-'+t.cat;
+    const catLabel={produttivita:'Produttività',coding:'Coding',sicurezza:'Sicurezza',hr:'HR',customer:'Customer'}[t.cat];
+    return `<div class="tool-card">
+      <div class="tc-header">
+        <div>
+          <span class="tc-cat ${catClass}">${catLabel}</span>
+          <div class="tc-name" style="margin-top:8px">${t.name}</div>
+          <div class="tc-vendor">${t.vendor}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'DM Mono',monospace;font-size:22px;color:var(--accent3);font-weight:500">${t.roi}%</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);text-transform:uppercase">ROI stimato</div>
+        </div>
+      </div>
+      <p class="tc-desc">${t.desc}</p>
+      <div class="roi-section">
+        <div class="roi-row"><span class="roi-label">Risparmio/sett.</span><span class="roi-val">${t.risparmio}h</span></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${hPct}%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
+      </div>
+      <div class="roi-section">
+        <div class="roi-row"><span class="roi-label">ROI</span><span class="roi-val">${t.roi}%</span></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:${roiPct}%;background:linear-gradient(90deg,var(--accent3),var(--accent))"></div></div>
+      </div>
+      <div class="pricing-row">${t.pricing.map(p=>`<span class="price-tag ${p.cls}">${p.label}</span>`).join('')}</div>
+      <div class="compliance-row">${t.compliance.map(c=>`<span class="comp-tag ${c.cls}">${c.label}</span>`).join('')}</div>
+      <div class="alt-row">${t.alt}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateSummary(){
+  const f=getFiltered();
+  const totH=f.reduce((a,t)=>a+t.risparmio,0);
+  const free=f.filter(t=>t.costoMese===0).length;
+  const avgRoi=f.length?Math.round(f.reduce((a,t)=>a+t.roi,0)/f.length):0;
+  document.getElementById('sumTools').textContent=f.length;
+  document.getElementById('sumSave').textContent=totH.toFixed(0)+'h';
+  document.getElementById('sumFree').textContent=free;
+  document.getElementById('sumRoi').textContent=avgRoi+'%';
+}
+
+// CHARTS
+const gridColor='rgba(255,255,255,.05)';
+const tickColor='#5a6a7a';
+Chart.defaults.color=tickColor;
+Chart.defaults.font.family="'DM Mono',monospace";
+Chart.defaults.font.size=11;
+
+new Chart(document.getElementById('chartTime'),{
+  type:'bar',
+  data:{
+    labels:['Produttività','Coding','Sicurezza','HR','Customer'],
+    datasets:[{
+      label:'Ore risparmiate/sett (team 5)',
+      data:[13.8,12.0,17.0,9.5,14.0],
+      backgroundColor:['rgba(0,229,255,.7)','rgba(123,97,255,.7)','rgba(255,77,109,.7)','rgba(255,209,102,.7)','rgba(0,255,136,.7)'],
+      borderRadius:6,barThickness:28
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{color:gridColor},ticks:{color:tickColor}},
+      y:{grid:{color:gridColor},ticks:{color:tickColor,callback:v=>v+'h'}}
+    }
+  }
+});
+
+new Chart(document.getElementById('chartROI'),{
+  type:'bar',
+  data:{
+    labels:['Produttività','Coding','Sicurezza','HR','Customer'],
+    datasets:[{
+      label:'ROI medio %',
+      data:[345,535,350,275,475],
+      backgroundColor:['rgba(0,229,255,.7)','rgba(123,97,255,.7)','rgba(255,77,109,.7)','rgba(255,209,102,.7)','rgba(0,255,136,.7)'],
+      borderRadius:6,barThickness:28
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{color:gridColor},ticks:{color:tickColor}},
+      y:{grid:{color:gridColor},ticks:{color:tickColor,callback:v=>v+'%'}}
+    }
+  }
+});
+
+// init
+renderCards();
+</script>
+</body>
+</html>
