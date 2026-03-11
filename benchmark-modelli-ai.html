@@ -3,381 +3,429 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Benchmark Modelli AI — Confronto 2025</title>
+  <title>Benchmark Modelli AI — Storico 2024-2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
-      --bg: #080c10; --surface: #0e1419; --border: #1a2330;
-      --accent: #00e5ff; --accent2: #7b61ff; --accent3: #00ff88;
-      --danger: #ff4d6d; --yellow: #ffd166;
-      --text: #e8edf2; --muted: #5a6a7a;
+      --bg:#080c10;--surface:#0e1419;--border:#1a2330;
+      --accent:#00e5ff;--accent2:#7b61ff;--accent3:#00ff88;
+      --danger:#ff4d6d;--yellow:#ffd166;
+      --text:#e8edf2;--muted:#5a6a7a;--muted2:#8a9ab0;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; overflow-x: hidden; }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background-image: linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
-      background-size: 40px 40px; pointer-events: none; z-index: 0;
-    }
-    .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
-    .orb-1 { width: 500px; height: 500px; background: rgba(0,229,255,0.05); top: -150px; right: -100px; }
-    .orb-2 { width: 400px; height: 400px; background: rgba(123,97,255,0.05); bottom: -100px; left: -100px; }
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
-    header { padding: 60px 0 40px; text-align: center; }
-    .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.2); border-radius: 100px; padding: 6px 16px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; }
-    h1 { font-family: 'Syne', sans-serif; font-size: clamp(28px, 5vw, 52px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 16px; }
-    h1 span { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .subtitle { color: var(--muted); font-size: 13px; line-height: 1.8; max-width: 600px; margin: 0 auto 48px; }
-    .tabs { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; justify-content: center; }
-    .tab { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 18px; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); cursor: pointer; transition: all 0.2s; }
-    .tab:hover { border-color: var(--accent); color: var(--text); }
-    .tab.active { border-color: var(--accent); background: rgba(0,229,255,0.08); color: var(--accent); }
-    .chart-section { display: none; }
-    .chart-section.active { display: block; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
-    .card-header { margin-bottom: 24px; }
-    .card-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-    .card h2 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-    .card p { font-size: 12px; color: var(--muted); line-height: 1.7; }
-    .chart-wrap { position: relative; height: 320px; }
-    .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
-    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .insight-box { background: rgba(0,229,255,0.04); border: 1px solid rgba(0,229,255,0.12); border-radius: 10px; padding: 16px 20px; font-size: 12px; color: var(--muted); line-height: 1.8; margin-top: 20px; }
-    .insight-box strong { color: var(--text); }
-    .table-wrap { overflow-x: auto; margin-top: 8px; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border); }
-    td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #c0cdd8; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
-    .badge-score { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
-    .score-high { background: rgba(0,255,136,0.1); color: var(--accent3); border: 1px solid rgba(0,255,136,0.2); }
-    .score-mid  { background: rgba(0,229,255,0.1); color: var(--accent);  border: 1px solid rgba(0,229,255,0.2); }
-    .score-low  { background: rgba(255,77,109,0.1); color: var(--danger);  border: 1px solid rgba(255,77,109,0.2); }
-    .model-tag { display: inline-flex; align-items: center; gap: 6px; }
-    .model-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    footer { text-align: center; padding: 40px 0 32px; font-size: 11px; color: var(--muted); }
-    footer a { color: var(--accent); text-decoration: none; }
-    @media (max-width: 600px) { .card { padding: 18px; } .chart-wrap { height: 260px; } }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+    .orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+    .orb-1{width:500px;height:500px;background:rgba(0,229,255,.05);top:-150px;right:-100px}
+    .orb-2{width:400px;height:400px;background:rgba(123,97,255,.05);bottom:-100px;left:-100px}
+    .wrap{max-width:1000px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+    header{padding:60px 0 32px;text-align:center}
+    .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);border-radius:100px;padding:6px 16px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:24px}
+    .badge::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 2s infinite}
+    h1{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}
+    h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .subtitle{color:var(--muted2);font-size:12px;line-height:1.8;max-width:560px;margin:0 auto 48px}
+
+    /* TIMELINE SLIDER */
+    .timeline-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:32px}
+    .timeline-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+    .periods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px}
+    .period-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:12px 8px;cursor:pointer;transition:all .2s;text-align:center;font-family:'DM Mono',monospace}
+    .period-btn:hover{border-color:rgba(0,229,255,.3)}
+    .period-btn.active{border-color:var(--accent);background:rgba(0,229,255,.08)}
+    .period-btn .p-date{font-size:13px;color:var(--accent);font-weight:500;display:block;margin-bottom:4px}
+    .period-btn .p-label{font-size:10px;color:var(--muted2)}
+    .period-info{display:flex;align-items:center;gap:16px;padding:12px 16px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.1);border-radius:8px;font-size:11px;color:var(--muted2)}
+    .period-info strong{color:var(--text)}
+    .period-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;flex-shrink:0;animation:blink 2s infinite}
+
+    /* TABS */
+    .tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+    .tab{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);cursor:pointer;transition:all .2s}
+    .tab:hover{border-color:var(--accent);color:var(--text)}
+    .tab.active{border-color:var(--accent);background:rgba(0,229,255,.08);color:var(--accent)}
+    .chart-section{display:none}
+    .chart-section.active{display:block}
+
+    /* CARDS */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px}
+    .card-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+    .card h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+    .card p{font-size:12px;color:var(--muted2);line-height:1.7}
+    .chart-wrap{position:relative;height:300px;margin-top:24px}
+    .insight{background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.1);border-radius:8px;padding:14px 18px;font-size:11px;color:var(--muted2);line-height:1.8;margin-top:16px}
+    .insight strong{color:var(--text)}
+
+    /* TABLE */
+    .table-wrap{overflow-x:auto;margin-top:8px}
+    table{width:100%;border-collapse:collapse;font-size:11px}
+    th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+    td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.03);color:#c0cdd8}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .bs{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px}
+    .bh{background:rgba(0,255,136,.1);color:var(--accent3);border:1px solid rgba(0,255,136,.2)}
+    .bm{background:rgba(0,229,255,.1);color:var(--accent);border:1px solid rgba(0,229,255,.2)}
+    .bl{background:rgba(255,77,109,.1);color:var(--danger);border:1px solid rgba(255,77,109,.2)}
+    .bn{background:rgba(90,106,122,.1);color:var(--muted);border:1px solid rgba(90,106,122,.2)}
+    .mdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+
+    /* EVOLUTION chart */
+    .evo-wrap{position:relative;height:340px;margin-top:24px}
+
+    footer{text-align:center;padding:40px 0 28px;font-size:11px;color:var(--muted)}
+    footer a{color:var(--accent);text-decoration:none}
+
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    @media(max-width:600px){.periods{grid-template-columns:repeat(2,1fr)}.chart-wrap{height:220px}.evo-wrap{height:260px}.card{padding:16px}}
   </style>
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="wrap">
 
-  <div class="container">
-    <header>
-      <div class="badge">&#9670; AI Benchmark Guide 2025-2026</div>
-      <h1>Confronto<br><span>Modelli AI</span></h1>
-      <p class="subtitle">Benchmark aggiornati per i principali modelli AI frontier. Dati da Vellum Leaderboard, LXT e provider ufficiali. I grafici mostrano performance reali, non marketing.</p>
-    </header>
+  <header>
+    <div class="badge">Storico benchmark AI 2024 – 2026</div>
+    <h1>Come sono cambiati<br><span>i modelli AI</span></h1>
+    <p class="subtitle">Seleziona un periodo e vedi quali modelli dominavano i benchmark in quel momento. Dati da provider ufficiali, Vellum Leaderboard e LXT AI.</p>
+  </header>
 
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('ragionamento')">Ragionamento</button>
-      <button class="tab" onclick="showTab('coding')">Coding</button>
-      <button class="tab" onclick="showTab('matematica')">Matematica</button>
-      <button class="tab" onclick="showTab('generale')">Generale</button>
-      <button class="tab" onclick="showTab('tabella')">Tabella completa</button>
+  <!-- TIMELINE -->
+  <div class="timeline-wrap">
+    <div class="timeline-label">&#9670; Seleziona il periodo</div>
+    <div class="periods">
+      <button class="period-btn" onclick="setPeriod(0,this)">
+        <span class="p-date">Giu 2024</span>
+        <span class="p-label">Era GPT-4o</span>
+      </button>
+      <button class="period-btn" onclick="setPeriod(1,this)">
+        <span class="p-date">Dic 2024</span>
+        <span class="p-label">Claude 3.5 domina</span>
+      </button>
+      <button class="period-btn" onclick="setPeriod(2,this)">
+        <span class="p-date">Set 2025</span>
+        <span class="p-label">GPT-5 &amp; Claude 4.x</span>
+      </button>
+      <button class="period-btn active" onclick="setPeriod(3,this)">
+        <span class="p-date">Mar 2026</span>
+        <span class="p-label">Oggi — frontier</span>
+      </button>
     </div>
-
-    <!-- RAGIONAMENTO -->
-    <div class="chart-section active" id="tab-ragionamento">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-label">Benchmark — GPQA Diamond</div>
-          <h2>Ragionamento avanzato</h2>
-          <p>GPQA Diamond testa domande di livello PhD in biologia, fisica e chimica. I non-esperti ottengono circa il 34% — il punteggio umano esperto medio è ~65%. Un modello AI sopra l'85% supera la maggior parte dei dottorandi.</p>
-        </div>
-        <div class="chart-wrap">
-          <canvas id="chartGPQA"></canvas>
-        </div>
-        <div class="insight-box">
-          <strong>Cosa significa:</strong> GPT 5.2 e Gemini 3 Pro dominano il ragionamento scientifico avanzato con oltre il 90%. Claude Opus 4.5 si posiziona forte a 91.3%. DeepSeek V3 e i modelli open source si avvicinano alla soglia dell'85%, rendendo il gap tra closed e open molto ridotto rispetto al 2023.
-        </div>
-      </div>
+    <div class="period-info">
+      <div class="period-dot"></div>
+      <div id="periodDesc">Marzo 2026 — <strong>GPT-5.x, Claude Opus/Sonnet 4.6, Gemini 3.x</strong> si contendono il primato. I benchmark più difficili come HLE e ARC-AGI-2 sono ancora lontani dalla saturazione.</div>
     </div>
-
-    <!-- CODING -->
-    <div class="chart-section" id="tab-coding">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-label">Benchmark — SWE-bench Verified</div>
-          <h2>Coding agente — bug reali su GitHub</h2>
-          <p>SWE-bench misura la capacità di risolvere issue reali di GitHub in codebase esistenti. Non basta generare codice — bisogna capire il progetto, trovare il bug e scrivere una soluzione che passi i test. Il benchmark piu' realistico per il coding.</p>
-        </div>
-        <div class="chart-wrap">
-          <canvas id="chartSWE"></canvas>
-        </div>
-        <div class="insight-box">
-          <strong>Cosa significa:</strong> Claude Sonnet 4.5 e Opus 4.5 dominano il coding agente con oltre l'80% — il motivo per cui Claude e' il modello preferito per strumenti come Cursor e GitHub Copilot. GPT 5.2 e Gemini 3 Pro seguono da vicino. Per chi usa AI per programmare, questo e' il benchmark piu' rilevante.
-        </div>
-      </div>
-    </div>
-
-    <!-- MATEMATICA -->
-    <div class="chart-section" id="tab-matematica">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-label">Benchmark — AIME 2025</div>
-          <h2>Matematica competitiva</h2>
-          <p>AIME e' il test di matematica competitiva americano per liceali. Problemi di algebra, geometria e teoria dei numeri che richiedono ragionamento in piu' passi. Il punteggio umano medio tra i partecipanti e' circa 30-40%.</p>
-        </div>
-        <div class="chart-wrap">
-          <canvas id="chartAIME"></canvas>
-        </div>
-        <div class="insight-box">
-          <strong>Cosa significa:</strong> GPT 5.2 e Gemini 3 Pro raggiungono il 100% — prestazione sovrumana su matematica competitiva. I modelli di ragionamento (o3, Kimi K2 Thinking) sono ottimizzati per questo tipo di task. Claude e' forte ma non domina questo benchmark specifico.
-        </div>
-      </div>
-    </div>
-
-    <!-- GENERALE -->
-    <div class="chart-section" id="tab-generale">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-label">Benchmark — Humanity's Last Exam</div>
-          <h2>Il benchmark piu' difficile</h2>
-          <p>HLE e' il benchmark piu' recente e difficile — domande di livello accademico avanzato cross-disciplinari, selezionate da esperti mondiali per essere resistenti all'AI. E' il piu' difficile da saturare e il piu' indicativo delle capacita' reali.</p>
-        </div>
-        <div class="chart-wrap">
-          <canvas id="chartHLE"></canvas>
-        </div>
-        <div class="insight-box">
-          <strong>Cosa significa:</strong> Anche i modelli migliori ottengono meno del 50% — questo e' il benchmark del futuro. Gemini 3 Pro guida con 45.8%. I punteggi bassi non indicano modelli "scarsi" — indicano che l'AI ha ancora molto margine di miglioramento su conoscenza specialistica.
-        </div>
-      </div>
-    </div>
-
-    <!-- TABELLA -->
-    <div class="chart-section" id="tab-tabella">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-label">Panoramica completa</div>
-          <h2>Tutti i modelli a confronto</h2>
-          <p>Dati aggiornati a inizio 2026. Fonti: Vellum LLM Leaderboard, LXT AI Blog, provider ufficiali.</p>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Modello</th>
-                <th>Sviluppatore</th>
-                <th>GPQA Diamond</th>
-                <th>SWE-bench</th>
-                <th>AIME 2025</th>
-                <th>HLE</th>
-                <th>Tipo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="model-tag"><span class="model-dot" style="background:#00e5ff"></span>GPT 5.2</span></td>
-                <td>OpenAI</td>
-                <td><span class="badge-score score-high">92.4%</span></td>
-                <td><span class="badge-score score-high">80%</span></td>
-                <td><span class="badge-score score-high">100%</span></td>
-                <td><span class="badge-score score-mid">35.2%</span></td>
-                <td>Closed</td>
-              </tr>
-              <tr>
-                <td><span class="model-tag"><span class="model-dot" style="background:#7b61ff"></span>Gemini 3 Pro</span></td>
-                <td>Google</td>
-                <td><span class="badge-score score-high">91.9%</span></td>
-                <td><span class="badge-score score-high">76.2%</span></td>
-                <td><span class="badge-score score-high">100%</span></td>
-                <td><span class="badge-score score-high">45.8%</span></td>
-                <td>Closed</td>
-              </tr>
-              <tr>
-                <td><span class="model-tag"><span class="model-dot" style="background:#ff9f43"></span>Claude Opus 4.5</span></td>
-                <td>Anthropic</td>
-                <td><span class="badge-score score-high">91.3%</span></td>
-                <td><span class="badge-score score-high">80.9%</span></td>
-                <td><span class="badge-score score-mid">74%</span></td>
-                <td><span class="badge-score score-mid">—</span></td>
-                <td>Closed</td>
-              </tr>
-              <tr>
-                <td><span class="model-tag"><span class="model-dot" style="background:#ff9f43"></span>Claude Sonnet 4.5</span></td>
-                <td>Anthropic</td>
-                <td><span class="badge-score score-high">84%</span></td>
-                <td><span class="badge-score score-high">82%</span></td>
-                <td><span class="badge-score score-mid">68%</span></td>
-                <td><span class="badge-score score-mid">—</span></td>
-                <td>Closed</td>
-              </tr>
-              <tr>
-                <td><span class="model-tag"><span class="model-dot" style="background:#00e5ff"></span>GPT 5.1</span></td>
-                <td>OpenAI</td>
-                <td><span class="badge-score score-high">88.1%</span></td>
-                <td><span class="badge-score score-high">76.3%</span></td>
-                <td><span class="badge-score score-mid">—</span></td>
-                <td><span class="badge-score score-mid">—</span></td>
-                <td>Closed</td>
-              </tr>
-              <tr>
-                <td><span class="model-tag"><span class="model-dot" style="background:#00ff88"></span>DeepSeek V3</span></td>
-                <td>DeepSeek</td>
-                <td><span class="badge-score score-mid">75%</span></td>
-                <td><span class="badge-score score-mid">42%</span></td>
-                <td><span class="badge-score score-mid">59.4%</span></td>
-                <td><span class="badge-score score-low">11%</span></td>
-                <td>Open</td>
-              </tr>
-              <tr>
-                <td><span class="model-tag"><span class="model-dot" style="background:#00ff88"></span>Llama 4 Scout</span></td>
-                <td>Meta</td>
-                <td><span class="badge-score score-mid">73%</span></td>
-                <td><span class="badge-score score-mid">—</span></td>
-                <td><span class="badge-score score-mid">—</span></td>
-                <td><span class="badge-score score-low">—</span></td>
-                <td>Open</td>
-              </tr>
-              <tr>
-                <td><span class="model-tag"><span class="model-dot" style="background:#ffd166"></span>Grok 4</span></td>
-                <td>xAI</td>
-                <td><span class="badge-score score-high">87.5%</span></td>
-                <td><span class="badge-score score-mid">—</span></td>
-                <td><span class="badge-score score-mid">—</span></td>
-                <td><span class="badge-score score-mid">25.4%</span></td>
-                <td>Closed</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="insight-box" style="margin-top:20px">
-          <strong>Come leggere la tabella:</strong> — significa che il dato non e' pubblicamente disponibile. I modelli open source (DeepSeek, Llama) sono auto-hostabili gratuitamente ma hanno performance inferiori sui benchmark piu' difficili. Il gap si sta riducendo rapidamente.
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-label">Cosa misurano i benchmark</div>
-          <h2>Guida alla lettura</h2>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Benchmark</th><th>Cosa misura</th><th>Utile per</th><th>Saturazione</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>GPQA Diamond</td><td>Ragionamento scientifico PhD</td><td>Ricerca, analisi complessa</td><td>No — ancora discriminativo</td></tr>
-              <tr><td>SWE-bench</td><td>Bug reali su GitHub</td><td>Sviluppatori, coding assistant</td><td>No — molto difficile</td></tr>
-              <tr><td>AIME 2025</td><td>Matematica competitiva</td><td>STEM, ragionamento matematico</td><td>Parziale — top model a 100%</td></tr>
-              <tr><td>HumanEval</td><td>Generazione funzioni Python</td><td>Coding base</td><td>Si' — tutti sopra 85%</td></tr>
-              <tr><td>MMLU</td><td>Conoscenza generale (57 materie)</td><td>Q&A, chatbot generali</td><td>Si' — tutti sopra 88%</td></tr>
-              <tr><td>HLE</td><td>Domande accademiche avanzate</td><td>Ricerca, conoscenza specialistica</td><td>No — il piu' difficile</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      <p>Dati aggiornati a inizio 2026 · Fonti: <a href="https://www.vellum.ai/llm-leaderboard" target="_blank">Vellum Leaderboard</a> · Parte di <a href="https://github.com/NicholasIzzo/ai-practical-guide" target="_blank">ai-practical-guide</a> by Nicholas Izzo</p>
-    </footer>
   </div>
 
-  <script>
-    const COLORS = {
-      gpt:     '#00e5ff',
-      gemini:  '#7b61ff',
-      claude:  '#ff9f43',
-      deepseek:'#00ff88',
-      grok:    '#ffd166',
-      kimi:    '#ff6b9d',
-    };
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('ragionamento',this)">Ragionamento</button>
+    <button class="tab" onclick="showTab('coding',this)">Coding</button>
+    <button class="tab" onclick="showTab('matematica',this)">Matematica</button>
+    <button class="tab" onclick="showTab('evoluzione',this)">Evoluzione storica</button>
+    <button class="tab" onclick="showTab('tabella',this)">Tabella completa</button>
+  </div>
 
-    const gridColor = 'rgba(255,255,255,0.05)';
-    const tickColor = '#5a6a7a';
+  <!-- RAGIONAMENTO -->
+  <div class="chart-section active" id="tab-ragionamento">
+    <div class="card">
+      <div class="card-label">GPQA Diamond</div>
+      <h2>Ragionamento scientifico avanzato</h2>
+      <p>Domande di livello PhD in biologia, fisica, chimica. Non esperti: ~34%. Umani esperti: ~65%. Sopra 85% = supera la maggior parte dei dottorandi.</p>
+      <div class="chart-wrap"><canvas id="chartGPQA"></canvas></div>
+      <div class="insight" id="insightGPQA"></div>
+    </div>
+  </div>
 
-    Chart.defaults.color = tickColor;
-    Chart.defaults.font.family = "'DM Mono', monospace";
-    Chart.defaults.font.size = 11;
+  <!-- CODING -->
+  <div class="chart-section" id="tab-coding">
+    <div class="card">
+      <div class="card-label">SWE-bench Verified</div>
+      <h2>Coding agente — bug reali su GitHub</h2>
+      <p>Risoluzione di issue reali su repository GitHub. Il benchmark più realistico per valutare l'AI come strumento di sviluppo.</p>
+      <div class="chart-wrap"><canvas id="chartSWE"></canvas></div>
+      <div class="insight" id="insightSWE"></div>
+    </div>
+  </div>
 
-    function barConfig(labels, datasets, unit = '%') {
-      return {
-        type: 'bar',
-        data: { labels, datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          indexAxis: 'y',
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: ctx => ` ${ctx.parsed.x}${unit}`
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { color: gridColor },
-              ticks: { color: tickColor, callback: v => v + unit },
-              max: 100,
-            },
-            y: {
-              grid: { display: false },
-              ticks: { color: '#c0cdd8' }
-            }
-          }
-        }
-      };
+  <!-- MATEMATICA -->
+  <div class="chart-section" id="tab-matematica">
+    <div class="card">
+      <div class="card-label">AIME 2025 / GSM8K</div>
+      <h2>Matematica — da scolastica a competitiva</h2>
+      <p>AIME: matematica competitiva universitaria. GSM8K: problemi di matematica scolastica — ora completamente saturato dai modelli frontier.</p>
+      <div class="chart-wrap"><canvas id="chartMATH"></canvas></div>
+      <div class="insight" id="insightMATH"></div>
+    </div>
+  </div>
+
+  <!-- EVOLUZIONE -->
+  <div class="chart-section" id="tab-evoluzione">
+    <div class="card">
+      <div class="card-label">Trend storico — GPQA Diamond</div>
+      <h2>Come è cresciuto il ragionamento AI</h2>
+      <p>Evoluzione dei punteggi GPQA Diamond dal 2024 ad oggi per i modelli principali. Il progresso è stato rapido e costante.</p>
+      <div class="evo-wrap"><canvas id="chartEVO"></canvas></div>
+      <div class="insight">
+        <strong>Cosa racconta questo grafico:</strong> In meno di 2 anni i punteggi GPQA sono passati da ~70% (GPT-4o, giugno 2024) a oltre 94% (Gemini 3.1 Pro, 2026). Il livello umano esperto (~65%) è stato superato da tutti i modelli frontier già a fine 2024. Oggi i benchmark più duri come HLE diventano il nuovo riferimento.
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELLA -->
+  <div class="chart-section" id="tab-tabella">
+    <div class="card">
+      <div class="card-label">Panoramica per periodo</div>
+      <h2 id="tableTitle">Tutti i modelli — Q1 2026</h2>
+      <div class="table-wrap">
+        <table>
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="insight" id="insightTable"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Fonti: <a href="https://www.vellum.ai/llm-leaderboard" target="_blank">Vellum Leaderboard</a> · <a href="https://www.lxt.ai/blog/llm-benchmarks/" target="_blank">LXT AI</a> · provider ufficiali · aggiornato marzo 2026<br>
+    Parte di <a href="https://github.com/NicholasIzzo/ai-practical-guide" target="_blank">ai-practical-guide</a> by Nicholas Izzo — <a href="https://nicholasizzo.github.io/ai-practical-guide/" target="_blank">nicholasizzo.github.io/ai-practical-guide</a></p>
+  </footer>
+</div>
+
+<script>
+const C={gpt:'#00e5ff',gemini:'#7b61ff',claude:'#ff9f43',deepseek:'#00ff88',grok:'#ffd166',llama:'#ff6b9d',other:'#8a9ab0'};
+const grid='rgba(255,255,255,.05)';
+
+// ── DATA ────────────────────────────────────────────────────
+const PERIODS = [
+  {
+    id:0, name:'Q2 2024', desc:'Maggio 2024 — <strong>GPT-4o</strong> domina il mercato, Claude 3 Opus è il principale rivale. I benchmark come MMLU iniziano a saturarsi.',
+    gpqa:{
+      labels:['GPT-4o','Claude 3 Opus','Gemini 1.5 Pro','Claude 3.5 Sonnet','Llama 3 70B'],
+      data:[53.6,50.4,46.2,59.4,32.4],
+      colors:[C.gpt,C.claude,C.gemini,C.claude,C.llama]
+    },
+    swe:{
+      labels:['Claude 3.5 Sonnet','GPT-4o','DeepSeek V2','Llama 3 70B'],
+      data:[12.5,1.8,1.5,0.5],
+      colors:[C.claude,C.gpt,C.deepseek,C.llama]
+    },
+    math:{
+      labels:['GPT-4o (GSM8K)','Claude 3 Opus (GSM8K)','Gemini 1.5 Pro (GSM8K)','GPT-4o (AIME)'],
+      data:[95.2,94.2,91.7,9.3],
+      colors:[C.gpt,C.claude,C.gemini,C.gpt]
+    },
+    insightGPQA:'<strong>Giugno 2024:</strong> GPT-4o e Claude 3 Opus si equivalgono. Claude 3.5 Sonnet, uscito a giugno 2024, fa un salto notevole a 59.4% — segnale di quanto velocemente stesse migliorando la famiglia Claude.',
+    insightSWE:'<strong>Giugno 2024:</strong> SWE-bench è ancora quasi irrisolvibile. Claude 3.5 Sonnet raggiunge il 12.5% — un risultato considerato straordinario all\'epoca. GPT-4o è quasi a zero.',
+    insightMATH:'<strong>Giugno 2024:</strong> GSM8K (matematica scolastica) è già quasi saturato — tutti i modelli frontier superano il 90%. AIME (competitivo) è ancora fuori portata per quasi tutti: GPT-4o fa solo 9.3%.',
+    table:[
+      {m:'GPT-4o',dev:'OpenAI',gpqa:'53.6%',swe:'1.8%',aime:'9.3%',tipo:'Closed'},
+      {m:'Claude 3.5 Sonnet',dev:'Anthropic',gpqa:'59.4%',swe:'12.5%',aime:'—',tipo:'Closed'},
+      {m:'Claude 3 Opus',dev:'Anthropic',gpqa:'50.4%',swe:'—',aime:'—',tipo:'Closed'},
+      {m:'Gemini 1.5 Pro',dev:'Google',gpqa:'46.2%',swe:'—',aime:'—',tipo:'Closed'},
+      {m:'Llama 3 70B',dev:'Meta',gpqa:'32.4%',swe:'0.5%',aime:'—',tipo:'Open'},
+    ],
+    insightTable:'<strong>Q2 2024:</strong> GPT-4o è il modello di riferimento ma Claude 3.5 Sonnet segna un punto di svolta. I modelli open source sono ancora molto indietro sui benchmark complessi.'
+  },
+  {
+    id:1, name:'Q4 2024', desc:'Ottobre–Dicembre 2024 — <strong>Claude 3.5 Sonnet</strong> domina SWE-bench con il 49%. GPT-4o resta forte, Gemini 1.5 Pro migliora. DeepSeek V3 arriva a fine anno.',
+    gpqa:{
+      labels:['Claude 3.5 Sonnet','GPT-4o (Nov)','Gemini 1.5 Pro','DeepSeek V3','Llama 3.1 405B'],
+      data:[65.0,53.6,49.9,59.1,50.7],
+      colors:[C.claude,C.gpt,C.gemini,C.deepseek,C.llama]
+    },
+    swe:{
+      labels:['Claude 3.5 Sonnet','GPT-4o','DeepSeek V3','Llama 3.1 70B'],
+      data:[49.0,38.0,25.7,12.0],
+      colors:[C.claude,C.gpt,C.deepseek,C.llama]
+    },
+    math:{
+      labels:['GPT-4o (AIME)','Claude 3.5 (AIME)','DeepSeek V3 (AIME)','Gemini 1.5 (AIME)'],
+      data:[9.3,16.0,39.2,7.0],
+      colors:[C.gpt,C.claude,C.deepseek,C.gemini]
+    },
+    insightGPQA:'<strong>Fine 2024:</strong> Claude 3.5 Sonnet sale a 65% su GPQA Diamond, superando chiaramente GPT-4o. DeepSeek V3, uscito a dicembre 2024, sorprende con 59.1% nonostante sia open source.',
+    insightSWE:'<strong>Fine 2024:</strong> Claude 3.5 Sonnet raggiunge il 49% su SWE-bench — quasi 4x rispetto a giugno. GPT-4o (novembre) migliora a 38%. DeepSeek V3 entra con forza al 25.7%.',
+    insightMATH:'<strong>Fine 2024:</strong> DeepSeek V3 sorprende su AIME con 39.2% — molto meglio di GPT-4o e Claude. I modelli di ragionamento matematico open source iniziano a competere seriamente.',
+    table:[
+      {m:'Claude 3.5 Sonnet',dev:'Anthropic',gpqa:'65.0%',swe:'49.0%',aime:'16.0%',tipo:'Closed'},
+      {m:'GPT-4o (Nov 2024)',dev:'OpenAI',gpqa:'53.6%',swe:'38.0%',aime:'9.3%',tipo:'Closed'},
+      {m:'DeepSeek V3',dev:'DeepSeek',gpqa:'59.1%',swe:'25.7%',aime:'39.2%',tipo:'Open'},
+      {m:'Gemini 1.5 Pro',dev:'Google',gpqa:'49.9%',swe:'—',aime:'7.0%',tipo:'Closed'},
+      {m:'Llama 3.1 405B',dev:'Meta',gpqa:'50.7%',swe:'12.0%',aime:'—',tipo:'Open'},
+    ],
+    insightTable:'<strong>Q4 2024:</strong> Claude 3.5 Sonnet domina SWE-bench. DeepSeek V3 è la sorpresa dell\'anno — open source e competitivo con i modelli closed su quasi tutti i benchmark.'
+  },
+  {
+    id:2, name:'Q3 2025', desc:'Luglio–Settembre 2025 — Arrivano <strong>GPT-5</strong> (agosto), <strong>Claude Opus 4.1</strong> e <strong>Grok 4</strong>. La competizione si fa estrema su HLE e ARC-AGI.',
+    gpqa:{
+      labels:['GPT-5','Grok 4','Claude Opus 4.1','Gemini 2.5 Pro','DeepSeek R1'],
+      data:[89.4,87.5,79.0,84.0,71.5],
+      colors:[C.gpt,C.grok,C.claude,C.gemini,C.deepseek]
+    },
+    swe:{
+      labels:['Claude Opus 4.1','GPT-5','Grok 4','Gemini 2.5 Pro','DeepSeek V3.1'],
+      data:[74.5,74.9,72.0,63.8,49.0],
+      colors:[C.claude,C.gpt,C.grok,C.gemini,C.deepseek]
+    },
+    math:{
+      labels:['GPT-5 (AIME)','Claude Opus 4.1 (AIME)','Grok 4 (AIME)','Gemini 2.5 Pro (AIME)','DeepSeek R1 (AIME)'],
+      data:[84.0,76.0,83.0,92.0,79.8],
+      colors:[C.gpt,C.claude,C.grok,C.gemini,C.deepseek]
+    },
+    insightGPQA:'<strong>Q3 2025:</strong> GPT-5 e Grok 4 si contendono il primato. Claude Opus 4.1 è forte ma leggermente indietro su GPQA. Gemini 2.5 Pro sorprende con 84%. La soglia del 70% è ormai la baseline per i modelli frontier.',
+    insightSWE:'<strong>Q3 2025:</strong> GPT-5 e Claude Opus 4.1 sono quasi in parità su SWE-bench, entrambi attorno al 74-75%. Il gap con i modelli open source si riduce: DeepSeek V3.1 raggiunge il 49%.',
+    insightMATH:'<strong>Q3 2025:</strong> Gemini 2.5 Pro domina AIME con 92% — ottimizzato per matematica. Tutti i modelli frontier superano il 75% su AIME, un benchmark che nel 2024 era quasi irrisolvibile.',
+    table:[
+      {m:'GPT-5',dev:'OpenAI',gpqa:'89.4%',swe:'74.9%',aime:'84.0%',tipo:'Closed'},
+      {m:'Grok 4',dev:'xAI',gpqa:'87.5%',swe:'72.0%',aime:'83.0%',tipo:'Closed'},
+      {m:'Claude Opus 4.1',dev:'Anthropic',gpqa:'79.0%',swe:'74.5%',aime:'76.0%',tipo:'Closed'},
+      {m:'Gemini 2.5 Pro',dev:'Google',gpqa:'84.0%',swe:'63.8%',aime:'92.0%',tipo:'Closed'},
+      {m:'DeepSeek R1',dev:'DeepSeek',gpqa:'71.5%',swe:'49.0%',aime:'79.8%',tipo:'Open'},
+    ],
+    insightTable:'<strong>Q3 2025:</strong> GPT-5 e Claude Opus 4.1 sono quasi equivalenti su coding. Gemini 2.5 Pro domina matematica. I modelli open source come DeepSeek R1 si avvicinano sensibilmente ai closed.'
+  },
+  {
+    id:3, name:'Q1 2026', desc:'Marzo 2026 — <strong>Claude Sonnet/Opus 4.6</strong>, <strong>GPT-5.2/5.3</strong>, <strong>Gemini 3 Pro</strong> al vertice. HLE e ARC-AGI-2 sono i nuovi benchmark non saturi.',
+    gpqa:{
+      labels:['GPT-5.2 Pro','Gemini 3 Pro','Claude Opus 4.6','GPT-5.1','Grok 4','Claude Sonnet 4.6','DeepSeek V3','Qwen3.5'],
+      data:[93.2,92.6,91.3,88.1,87.5,84.0,75.0,88.4],
+      colors:[C.gpt,C.gemini,C.claude,C.gpt,C.grok,C.claude,C.deepseek,C.other]
+    },
+    swe:{
+      labels:['Claude Sonnet 4.6','Claude Opus 4.5','GPT-5.2','GPT-5.1','Gemini 3 Pro','DeepSeek V3.1','Claude Sonnet 4.5'],
+      data:[82.0,80.9,80.0,76.3,76.2,66.0,79.6],
+      colors:[C.claude,C.claude,C.gpt,C.gpt,C.gemini,C.deepseek,C.claude]
+    },
+    math:{
+      labels:['GPT-5.2 (AIME)','Gemini 3 Pro (AIME)','Kimi K2 (AIME)','OpenAI o3 (AIME)','Claude Opus 4.6 (AIME)'],
+      data:[100,100,99.1,98.4,74.0],
+      colors:[C.gpt,C.gemini,C.other,C.gpt,C.claude]
+    },
+    insightGPQA:'<strong>Marzo 2026:</strong> GPT-5.2 Pro e Gemini 3 Pro superano il 92% — territory umano esperto completamente superato. Claude Opus 4.6 è terzo con 91.3%. Qwen3.5 da Alibaba sorprende con 88.4%, segno che la corsa è globale.',
+    insightSWE:'<strong>Marzo 2026:</strong> Claude Sonnet 4.6 guida SWE-bench con 82% — il codice agente è il punto forte della famiglia Claude. GPT-5.2 e Claude Opus 4.5 seguono da vicino. DeepSeek V3.1 resta competitivo al 66%.',
+    insightMATH:'<strong>Marzo 2026:</strong> GPT-5.2 e Gemini 3 Pro raggiungono il 100% su AIME — saturazione completa su matematica competitiva. I benchmark matematici utili diventano FrontierMath e problemi di livello olimpico.',
+    table:[
+      {m:'GPT-5.2 Pro',dev:'OpenAI',gpqa:'93.2%',swe:'80.0%',aime:'100%',tipo:'Closed'},
+      {m:'Gemini 3 Pro',dev:'Google',gpqa:'92.6%',swe:'76.2%',aime:'100%',tipo:'Closed'},
+      {m:'Claude Opus 4.6',dev:'Anthropic',gpqa:'91.3%',swe:'80.8%',aime:'74%',tipo:'Closed'},
+      {m:'Claude Sonnet 4.6',dev:'Anthropic',gpqa:'84.0%',swe:'82.0%',aime:'—',tipo:'Closed'},
+      {m:'GPT-5.1',dev:'OpenAI',gpqa:'88.1%',swe:'76.3%',aime:'—',tipo:'Closed'},
+      {m:'Grok 4',dev:'xAI',gpqa:'87.5%',swe:'—',aime:'—',tipo:'Closed'},
+      {m:'Qwen3.5',dev:'Alibaba',gpqa:'88.4%',swe:'—',aime:'—',tipo:'Open'},
+      {m:'DeepSeek V3.1',dev:'DeepSeek',gpqa:'75.0%',swe:'66.0%',aime:'—',tipo:'Open'},
+    ],
+    insightTable:'<strong>Q1 2026:</strong> Claude domina SWE-bench (coding agente), GPT-5.2 e Gemini 3 Pro dominano ragionamento e matematica. I modelli open source come Qwen3.5 si avvicinano sorprendentemente ai closed.'
+  }
+];
+
+// EVOLUZIONE STORICA — dati fissi
+const EVO_DATA = {
+  labels:['Giu 2024','Dic 2024','Ago 2025','Mar 2026'],
+  datasets:[
+    {label:'GPT (best)',data:[53.6,53.6,89.4,93.2],borderColor:C.gpt,backgroundColor:'rgba(0,229,255,.08)',tension:.4,pointRadius:5,pointBackgroundColor:C.gpt},
+    {label:'Claude (best)',data:[59.4,65.0,79.0,91.3],borderColor:C.claude,backgroundColor:'rgba(255,159,67,.08)',tension:.4,pointRadius:5,pointBackgroundColor:C.claude},
+    {label:'Gemini (best)',data:[46.2,49.9,84.0,92.6],borderColor:C.gemini,backgroundColor:'rgba(123,97,255,.08)',tension:.4,pointRadius:5,pointBackgroundColor:C.gemini},
+    {label:'Open source (best)',data:[32.4,59.1,71.5,88.4],borderColor:C.deepseek,backgroundColor:'rgba(0,255,136,.08)',tension:.4,pointRadius:5,pointBackgroundColor:C.deepseek},
+  ]
+};
+
+// ── CHARTS ──────────────────────────────────────────────────
+let charts={};
+let currentPeriod=3;
+
+function barCfg(labels,data,colors){
+  return{
+    type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:6,barThickness:22}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.parsed.x}%`}}},
+      scales:{
+        x:{max:100,grid:{color:grid},ticks:{color:'#5a6a7a',callback:v=>v+'%'}},
+        y:{grid:{display:false},ticks:{color:'#c0cdd8',font:{size:11}}}
+      }
     }
+  };
+}
 
-    // GPQA
-    new Chart(document.getElementById('chartGPQA'), barConfig(
-      ['GPT 5.2', 'Gemini 3 Pro', 'Claude Opus 4.5', 'GPT 5.1', 'Grok 4', 'GPT-5', 'Claude Sonnet 4.5', 'DeepSeek V3'],
-      [{
-        data: [92.4, 91.9, 91.3, 88.1, 87.5, 87.3, 84, 75],
-        backgroundColor: [COLORS.gpt, COLORS.gemini, COLORS.claude, COLORS.gpt, COLORS.grok, COLORS.gpt, COLORS.claude, COLORS.deepseek],
-        borderRadius: 6,
-        barThickness: 22,
-      }]
-    ));
+function buildCharts(p){
+  const d=PERIODS[p];
+  ['chartGPQA','chartSWE','chartMATH'].forEach(id=>{
+    if(charts[id]){charts[id].destroy();delete charts[id];}
+  });
+  const gd=d.gpqa; charts.chartGPQA=new Chart(document.getElementById('chartGPQA'),barCfg(gd.labels,gd.data,gd.colors));
+  const sd=d.swe;  charts.chartSWE =new Chart(document.getElementById('chartSWE'), barCfg(sd.labels,sd.data,sd.colors));
+  const md=d.math; charts.chartMATH=new Chart(document.getElementById('chartMATH'),barCfg(md.labels,md.data,md.colors));
 
-    // SWE-bench
-    new Chart(document.getElementById('chartSWE'), barConfig(
-      ['Claude Sonnet 4.5', 'Claude Opus 4.5', 'GPT 5.2', 'GPT 5.1', 'Gemini 3 Pro'],
-      [{
-        data: [82, 80.9, 80, 76.3, 76.2],
-        backgroundColor: [COLORS.claude, COLORS.claude, COLORS.gpt, COLORS.gpt, COLORS.gemini],
-        borderRadius: 6,
-        barThickness: 28,
-      }]
-    ));
+  document.getElementById('insightGPQA').innerHTML=d.insightGPQA;
+  document.getElementById('insightSWE').innerHTML=d.insightSWE;
+  document.getElementById('insightMATH').innerHTML=d.insightMATH;
 
-    // AIME
-    new Chart(document.getElementById('chartAIME'), barConfig(
-      ['GPT 5.2', 'Gemini 3 Pro', 'Kimi K2 Thinking', 'GPT oss 20b', 'OpenAI o3', 'DeepSeek R1', 'Claude Opus 4.5'],
-      [{
-        data: [100, 100, 99.1, 98.7, 98.4, 87.5, 74],
-        backgroundColor: [COLORS.gpt, COLORS.gemini, COLORS.kimi, COLORS.gpt, COLORS.gpt, COLORS.deepseek, COLORS.claude],
-        borderRadius: 6,
-        barThickness: 22,
-      }]
-    ));
+  // tabella
+  document.getElementById('tableTitle').textContent='Tutti i modelli — '+d.name;
+  const thead=document.getElementById('tableHead');
+  const tbody=document.getElementById('tableBody');
+  thead.innerHTML='<tr><th>Modello</th><th>Dev</th><th>GPQA ◆</th><th>SWE-bench</th><th>AIME</th><th>Tipo</th></tr>';
+  tbody.innerHTML=d.table.map(r=>`<tr>
+    <td>${r.m}</td><td style="color:var(--muted2)">${r.dev}</td>
+    <td>${scoreBadge(r.gpqa)}</td>
+    <td>${scoreBadge(r.swe)}</td>
+    <td>${scoreBadge(r.aime)}</td>
+    <td><span style="font-size:10px;color:${r.tipo==='Open'?'var(--accent3)':'var(--muted2)'}">${r.tipo}</span></td>
+  </tr>`).join('');
+  document.getElementById('insightTable').innerHTML=d.insightTable;
+  document.getElementById('periodDesc').innerHTML=d.desc;
+}
 
-    // HLE
-    new Chart(document.getElementById('chartHLE'), barConfig(
-      ["Gemini 3 Pro", "Kimi K2 Thinking", "GPT-5", "Grok 4", "Gemini 2.5 Pro"],
-      [{
-        data: [45.8, 44.9, 35.2, 25.4, 21.6],
-        backgroundColor: [COLORS.gemini, COLORS.kimi, COLORS.gpt, COLORS.grok, COLORS.gemini],
-        borderRadius: 6,
-        barThickness: 28,
-      }]
-    ));
+function scoreBadge(v){
+  if(!v||v==='—') return '<span class="bs bn">—</span>';
+  const n=parseFloat(v);
+  if(n>=80) return `<span class="bs bh">${v}</span>`;
+  if(n>=60) return `<span class="bs bm">${v}</span>`;
+  return `<span class="bs bl">${v}</span>`;
+}
 
-    function showTab(name) {
-      document.querySelectorAll('.chart-section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('tab-' + name).classList.add('active');
-      event.target.classList.add('active');
+function buildEvo(){
+  if(charts.chartEVO){charts.chartEVO.destroy();}
+  charts.chartEVO=new Chart(document.getElementById('chartEVO'),{
+    type:'line',
+    data:EVO_DATA,
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#8a9ab0',font:{size:11,family:'DM Mono'}}},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y}%`}}
+      },
+      scales:{
+        x:{grid:{color:grid},ticks:{color:'#5a6a7a'}},
+        y:{min:25,max:100,grid:{color:grid},ticks:{color:'#5a6a7a',callback:v=>v+'%'}}
+      }
     }
-  </script>
+  });
+}
+
+function setPeriod(idx,btn){
+  currentPeriod=idx;
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildCharts(idx);
+}
+
+function showTab(name,btn){
+  document.querySelectorAll('.chart-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='evoluzione') buildEvo();
+}
+
+// init
+buildCharts(3);
+</script>
 </body>
 </html>
