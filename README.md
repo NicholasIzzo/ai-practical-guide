@@ -56,10 +56,11 @@ Guida pratica all'intelligenza artificiale in italiano — casi d'uso reali, too
 - [AI nel mondo del lavoro IT](https://github.com/NicholasIzzo/ai-practical-guide/blob/master/docs/ai-mondo-del-lavoro.md) — competenze richieste, certificazioni, come prepararsi
 
 ### ⚡ AI a lavoro
-- [AI tool per la produttività](https://github.com/NicholasIzzo/ai-practical-guide/blob/master/docs/ai-tool-produttivita.md) — trascrizione call, riassunti, flussi di lavoro completi con Whisper, Claude, Copilot e altri
-- [AI nelle aziende](https://github.com/NicholasIzzo/ai-practical-guide/blob/master/docs/ai-nelle-aziende.md) — come le aziende stanno adottando l'AI, casi d'uso reali per settore
-- [AI ROI Calculator](https://nicholasizzo.github.io/ai-practical-guide/ai-roi-calculator.html) — costi, benefici e compliance per 20+ tool AI
-
+- [AI Tool per la produttività](https://github.com/NicholasIzzo/ai-practical-guide/blob/master/docs/lavoro/ai-tool-produttivita.md) — trascrizione call, riassunti, flussi di lavoro completi
+- [AI nelle aziende](https://github.com/NicholasIzzo/ai-practical-guide/blob/master/docs/lavoro/ai-nelle-aziende.md) — adozione AI per settore, casi d'uso reali
+- [AI Tool Gratuiti GDPR-ready](https://github.com/NicholasIzzo/ai-practical-guide/blob/master/docs/lavoro/ai-tool-gratuiti-azienda.md) — 12 tool con installazione step-by-step
+- [AI in Locale — Hardware e Setup](https://github.com/NicholasIzzo/ai-practical-guide/blob/master/docs/lavoro/ai-locale-hardware-setup.md) — guida tecnica per IT aziendali
+- [💰 AI ROI Calculator](https://nicholasizzo.github.io/ai-practical-guide/ai-roi-calculator.html) — costi, benefici e compliance per 20+ tool
 ---
 
 ## 🗺️ Roadmap
